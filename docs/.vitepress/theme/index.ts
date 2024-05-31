@@ -16,10 +16,10 @@ export default {
         
         // 评论组件 - https://giscus.app/
         giscusTalk({
-            repo: 'fechuck',
-            repoId: '你的仓库id',
-            category: '你选择的分类', // 默认: `General`
-            categoryId: '你的分类id',
+            repo: 'Inchill/fechuck',
+            repoId: 'R_kgDOMDJlRA',
+            category: 'Announcements', // 默认: `General`
+            categoryId: 'DIC_kwDOMDJlRM4CfwxK',
             mapping: 'pathname', // 默认: `pathname`
             inputPosition: 'top', // 默认: `top`
             lang: 'zh-CN', // 默认: `zh-CN`
