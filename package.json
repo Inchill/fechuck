@@ -1,0 +1,22 @@
+{
+  "name": "fechuck",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vitepress": "1.0.0-rc.45"
+  },
+  "dependencies": {
+    "vitepress-plugin-comment-with-giscus": "^1.1.15",
+    "vue": "^3.4.27"
+  }
+}
