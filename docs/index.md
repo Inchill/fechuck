@@ -8,8 +8,8 @@ hero:
   tagline: 坚持做正确的事
   actions:
     - theme: brand
-      text: 文章
-      link: /2024/小程序内嵌 h5 如何跳转其它小程序
+      text: 最新文章
+      link: /2024/web-view
     - theme: alt
       text: 关于
       link: /about/
