@@ -108,11 +108,11 @@ a cat on the beach with sunshine --cref https://upload.wikimedia.org/wikipedia/e
 
 最终生成的图片如下：
 
-![garfield cat on the beach with sunshine](garfield-cat-on-the-beach-with-sunshine.png)
+![garfield cat on the beach with sunshine](/2024/garfield-cat-on-the-beach-with-sunshine.png)
 
 这里的第三张图片就很有意思，我选择了 U3 按钮，然后点击了 vary subtle，生成的图像格子如下：
 
-![garfield cat vary subtle](garfield-cat-vary-subtle.png)
+![garfield cat vary subtle](/2024/garfield-cat-vary-subtle.png)
 
 还是很有意思的，这些参数能够极大程度地帮助我们创作出我们想要的图像。
 
