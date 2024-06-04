@@ -4,7 +4,11 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "休言的博客",
   description: "A VitePress Site",
+  head: [
+    ['link', { rel: 'icon', href: '/favicon.ico' }]
+  ],
   themeConfig: {
+    logo: '/favicon.ico',
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '文章', link: '/2024/web-view' },
