@@ -15,7 +15,7 @@ export default defineConfig({
         text: '2024',
         items: [
           { text: '小程序内嵌 h5 如何跳转其它小程序？', link: '/2024/web-view' },
-          { text: '程序员使用 Midjourney 的正确姿势', link: '/2024/mid-journey' }
+          { text: 'Midjourney 的基本使用', link: '/2024/mid-journey' }
         ]
       }
     ],
