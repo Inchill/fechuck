@@ -14,6 +14,14 @@ export default defineConfig({
       { text: '文章', link: '/2024/web-view' },
     ],
 
+    outline: {
+      label: '本页目录'
+    },
+
+    lastUpdated: {
+      text: '最后更新'
+    },
+
     sidebar: [
       {
         text: '2024',
@@ -28,10 +36,11 @@ export default defineConfig({
       { icon: 'github', link: 'https://github.com/inchill' }
     ]
   },
+
   markdown: {
     image: {
       // 默认禁用图片懒加载
       lazyLoading: true
     }
-  }
+  },
 })
