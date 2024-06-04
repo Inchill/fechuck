@@ -212,7 +212,7 @@ a cartoon sloth --cref https://cdn3.iconfinder.com/data/icons/animal-emoji/50/Sl
 
 ## 参考文档
 
-有关 Midjourney 的更多使用细节，可以查阅官方文档里，里面有更多的示例和用法，去帮助我们生成想要的图片。
+有关 Midjourney 的更多使用细节，可以查阅官方文档，里面有更多的示例和用法，去帮助我们生成想要的图片。
 
 - [Midjourney 官方文档](https://docs.midjourney.com/docs/quick-start)
 - [icons8](https://icons8.com/)
