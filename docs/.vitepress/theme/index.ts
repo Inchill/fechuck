@@ -3,6 +3,8 @@ import giscusTalk from 'vitepress-plugin-comment-with-giscus'
 import { useData, useRoute } from 'vitepress'
 import { toRefs } from 'vue'
 
+import './indeex.css'
+
 export default {
     ...DefaultTheme,
     enhanceApp(ctx) {
