@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: 最新文章
-      link: /2024/web-view
+      link: /2024/audio
     - theme: alt
       text: 关于
       link: /about/
