@@ -92,9 +92,10 @@ https://upload.wikimedia.org/wikipedia/en/thumb/b/bc/Garfield_the_Cat.svg/250px-
 
 - 纵横比：--aspect 或者 --ar
 - 随机性：--chaos，取值为 0 ～ 100，用于调整生成图像的变化和随机性。值较高会更具不确定性和创意性，较低会使得更为一致和可预测。
-- 角色参考：--cref URL，指定一张图像链接，用于生成图像的参考。
+- 角色参考：--cref URL，character reference，指定一张图像链接，用于生成图像的参考。
 - 快速模式：--fast。
 - 图像权重：--iw，设置相对于文本权重的图像提示权重，默认值为 1。
+- 样式参考：--sref，style reference，使用图片作为样式参考， 主要用于生成指定风格的图像。
 - 否定提示：--no，否定提示，将会把参数后文本指定的元素不包含在图像中。
 - 图像质量：--quality <.25、.5 或 1>，或 --q <.25、.5 或 1> 你希望花费多少渲染质量时间。默认值为 1。数值越高，使用的 GPU 分钟数越多；数值越低，使用的 GPU 分钟数越少。
 - 样式随机：--style random，在提示符中随机添加 32 个基本样式的样式调谐器代码。你也可以使用 --style random-16、--style random-64 或 --style random-128 来使用其他长度的样式调谐器的随机结果。
