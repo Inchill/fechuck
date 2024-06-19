@@ -11,7 +11,7 @@ export default defineConfig({
     logo: '/favicon.ico',
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: '文章', link: '/2024/audio' },
+      { text: '文章', link: '/2024/damping-effect' },
     ],
 
     outline: {
@@ -26,6 +26,7 @@ export default defineConfig({
       {
         text: '2024',
         items: [
+          { text: '数学编程之阻尼效应', link: '/2024/damping-effect' },
           { text: 'web 音频基础', link: '/2024/audio' },
           { text: 'Midjourney 的基本使用', link: '/2024/mid-journey' },
           { text: '小程序内嵌 h5 如何跳转其它小程序？', link: '/2024/web-view' }
@@ -42,6 +43,7 @@ export default defineConfig({
     image: {
       // 默认禁用图片懒加载
       lazyLoading: true
-    }
+    },
+    math: true
   },
 })
