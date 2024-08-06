@@ -11,7 +11,7 @@ export default defineConfig({
     logo: '/favicon.ico',
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: '文章', link: '/2024/damping-effect' },
+      { text: '文章', link: '/2024/pv' },
     ],
 
     outline: {
@@ -26,6 +26,7 @@ export default defineConfig({
       {
         text: '2024',
         items: [
+          { text: '如何统计页面的 PV&UV？', link: '/2024/pv' },
           { text: '数学编程之阻尼效应', link: '/2024/damping-effect' },
           { text: 'web 音频基础', link: '/2024/audio' },
           { text: 'Midjourney 的基本使用', link: '/2024/mid-journey' },
