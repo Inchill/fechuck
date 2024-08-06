@@ -113,3 +113,90 @@ window.history.replaceState = createHistoryEvent('replaceState')
 ## UV 统计
 
 如前所述，我们只上报 PV，UV 数据统计放在服务端做。在上报 PV 的时候，我们传递了用户信息，UV 是根据 PV 进行过滤得出的。上报的 PV 数据我存储在 `ElasticSearch` 上，然后通过 `ES` 的 `terms` 聚合来进行 UV 统计。
+
+首先需要创建一个存放 pv 日志的索引，暂且叫做 `monitor_pv`，对应的 `elasticsearch` 字段映射类型如下：
+
+```js
+// PV 字段映射
+export const pageVisitMappings = {
+  // dynamic: false,
+  properties: {
+    apikey: {
+      type: 'text',
+      fields: {
+        keyword: {
+          type: 'keyword',
+          ignore_above: 256,
+        },
+      },
+    },
+    deviceInfo: {
+      type: 'text',
+    },
+    breadcrumb: {
+      type: 'text',
+    },
+    sdkVersion: {
+      type: 'text',
+    },
+    time: {
+      type: 'date',
+      format: 'epoch_millis',
+    },
+    userId: {
+      type: 'text',
+      fields: {
+        keyword: {
+          type: 'keyword',
+          ignore_above: 256,
+        },
+      }, // 聚合查询必须是关键字类型，不然没法对文本类型聚合
+    },
+    uuid: {
+      type: 'text',
+    },
+    pageUrl: {
+      type: 'text',
+    },
+    ip: {
+      type: 'text',
+    },
+  },
+};
+```
+
+通过 `elasticsearch` 查询 `pv` 的时候，我们可以根据 `userId` 进一步聚合，得到 `uv` 数据。注意，在 `elasticsearch` 里面，文本类型字段是无法完成聚合操作的，需要定义为关键字类型。查询条件可以这么写：
+
+```js
+let uvAggs = {};
+if (type === 'uv') {
+  uvAggs = {
+    unique_visitors: {
+      cardinality: {
+        field: 'userId.keyword',
+      },
+    },
+  };
+}
+
+const params = {
+  index: esIndex.pv,
+  body: {
+    size: 0, // 不返回文档，只返回聚合结果
+    query: {
+      bool,
+    },
+    aggs: {
+      daily_count: {
+        date_histogram: {
+          field: 'time',
+          interval: '1d',
+        },
+        aggs: uvAggs,
+      },
+    },
+  },
+};
+```
+
+关于 `elasticsearch` 的具体操作可以查阅官方文档，这里我就一笔带过了，主要就是为了描述通过 `cardinality` 聚合来进行 `UV` 统计。
