@@ -110,6 +110,31 @@ window.history.pushState = createHistoryEvent('pushState')
 window.history.replaceState = createHistoryEvent('replaceState')
 ```
 
+### 动态路由导致 PV 不准确问题
+
+在单页应用开发中，同一个页面有时候会采用动态路由的方式，路由发生变化则数据变化，但其实还是同一个页面。比如一个在线考试页面，动态路由里会存在题目 `ID` 等信息，当切换题目的时候，路由发生变化，如果单纯地在路由变化时上报 `PV`，这会导致 `PV` 数据偏大，`PV/UV` 之比会达到不合理的程度，那这样的数据就是不准确的。要解决这个问题，就需要拿到页面链接，还原路由定义，并缓存前一次的页面路由，当 `url` 发生变化的时候，如果属于同一个动态路由，就不上报 `PV` 数据。
+
+```js
+let lastUrl; // 上一次路由
+
+// 识别动态路由
+const parseDynamicUrl = (url = '') => {
+  // 使用正则表达式匹配 URL 中的数字，并替换为 "[id]"
+  const parsedUrl = url.replace(/\/\d+/g, '/[id]');
+  return parsedUrl;
+};
+
+const reportPV = (url = '') => {
+  const route = url.split('?')?.[0];
+  const currentUrl = parseDynamicUrl(route);
+  if (currentUrl === lastUrl) return;
+  lastUrl = currentUrl;
+  // ...省略代码
+}
+```
+
+这个是为了规避特定场景下的动态路由导致的 `PV` 偏大的问题，但是还是会带来新的问题。比如动态路由就是为了满足不同页面的内容的呈现，例如有一个新闻资讯网站，动态路由里存放的是每篇文章的 `ID`，当用户打开单页应用后没有关闭过，在这期间阅读了很多篇文章，但是由于缓存了前一次的动态路由，即使后面再怎么切换文章，路由都会被认为是同一个，会导致从始至终只上报了一次 `PV` 数据，此时数据会比实际的少很多，也是不准确的。
+
 ## UV 统计
 
 如前所述，我们只上报 PV，UV 数据统计放在服务端做。在上报 PV 的时候，我们传递了用户信息，UV 是根据 PV 进行过滤得出的。上报的 PV 数据我存储在 `ElasticSearch` 上，然后通过 `ES` 的 `terms` 聚合来进行 UV 统计。
