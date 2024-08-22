@@ -11,7 +11,8 @@ export default defineConfig({
     logo: '/favicon.ico',
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: '文章', link: '/2024/pv' },
+      { text: '文章', link: '/2024/canvas-tainted' },
+      { text: '关于', link: '/about/' },
     ],
 
     outline: {
@@ -26,6 +27,7 @@ export default defineConfig({
       {
         text: '2024',
         items: [
+          { text: 'rrweb 录制 canvas 被污染', link: '/2024/canvas-tainted' },
           { text: '如何统计页面的 PV&UV？', link: '/2024/pv' },
           { text: '数学编程之阻尼效应', link: '/2024/damping-effect' },
           { text: 'web 音频基础', link: '/2024/audio' },
