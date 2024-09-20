@@ -1,6 +1,6 @@
 # 小程序内嵌 h5 如何跳转其它小程序？
 
-![landscape](/landscape.jpg)
+![landscape](/landscape.jpg){data-zoomable}
 
 ## 背景
 
@@ -17,7 +17,7 @@
 
 也就是当我们确定跳转的链接是 wxapp 协议的，则通过 `wx.miniProgram.postMessage` 通信方法来触发宿主小程序的跳转事件。查阅官方文档，发现小程序不会立即收到消息，只会在特定时机收到消息。
 
-![Web View](/2024/web-view.png)
+![Web View](/2024/web-view.png){data-zoomable}
 
 宿主小程序只会在小程序后退、组件销毁、分享、复制链接时，通过 `bindmessage` 收到消息，如果不满足这几个条件，你再怎么发送消息，宿主小程序都不会收到。而我们就是想让宿主小程序立即收到消息，
 然后调用 `wx.navigateToMiniProgram` 方法去打开其它小程序。
@@ -70,7 +70,7 @@
 
 方案二的中间页样式如下，这里我直接加了一个弹窗，点击确认后会再弹出另一个弹窗，用于确认是否跳转其它小程序。
 
-![middle-page](/2024/middle.png)
+![middle-page](/2024/middle.png){data-zoomable}
 
 因为使用的是 taro 框架开发小程序，所以下面是 taro 语法，具体代码如下：
 

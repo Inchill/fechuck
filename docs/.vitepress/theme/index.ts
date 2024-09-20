@@ -1,7 +1,10 @@
 import DefaultTheme from 'vitepress/theme'
 import giscusTalk from 'vitepress-plugin-comment-with-giscus'
 import { useData, useRoute } from 'vitepress'
-import { toRefs } from 'vue'
+import { toRefs, nextTick, onMounted, watch } from 'vue'
+import mediumZoom from 'medium-zoom'
+
+import './style.css'
 
 export default {
     ...DefaultTheme,
@@ -13,6 +16,9 @@ export default {
         // 获取前言和路由
         const { frontmatter } = toRefs(useData())
         const route = useRoute()
+        const initZoom = () => {
+            mediumZoom('[data-zoomable]', { background: 'rgba(0, 0, 0, 0.7)' });
+        }
         
         // 评论组件 - https://giscus.app/
         giscusTalk({
@@ -43,5 +49,8 @@ export default {
             // 可以在页面使用 `comment: true` 前言单独启用
             true
         )
+
+        onMounted(initZoom)
+        watch(() => route.path, () => nextTick(initZoom))
     }
 }
