@@ -10,19 +10,19 @@
 
 测试环境报错信息如下：
 
-![error](/2024/canvas-tainted/error.png)
+![error](/2024/canvas-tainted/error.png){data-zoomable}
 
 这个错误会不停地报，导致页面里的按钮被点击后没有响应。
 
 浏览器里定位到的代码位置如下：
 
-![browser-source](/2024/canvas-tainted/browser-source.png)
+![browser-source](/2024/canvas-tainted/browser-source.png){data-zoomable}
 
 ## 源码定位
 
 rrweb 对应的源码如下：
 
-![rrweb-source](/2024/canvas-tainted/rrweb-source.png)
+![rrweb-source](/2024/canvas-tainted/rrweb-source.png){data-zoomable}
 
 因为 rrweb 会一直录屏，它会不停地调用 is2DCanvasBlank 方法去判断 2d canvas 是否空白，结果就是因为源 canvas 图像被污染了，导致一直报错。
 
@@ -66,15 +66,15 @@ fabric.Image.fromURL('https://example.com/image.png', function(img) {
 
 刚开始没有设置第三个配置项，结果发现并没有生效。后来查看了 `fabric` `源码，fromURL` 方法定义如下：
 
-![fromURL](/2024/canvas-tainted/fromURL.png)
+![fromURL](/2024/canvas-tainted/fromURL.png){data-zoomable}
 
 然而官方文档里并没有说明这第三个参数:
 
-![fromURL-usage](/2024/canvas-tainted/fromURL-usage.png)
+![fromURL-usage](/2024/canvas-tainted/fromURL-usage.png){data-zoomable}
 
 我们在回调函数里去设置图片的 `crossOrigin`，已经没有意义了，需要在加载图片之前进行设置，否则就会被污染。继续查看 `loadImage` 源码就可以看到：
 
-![loadImage](/2024/canvas-tainted/loadImage.png)
+![loadImage](/2024/canvas-tainted/loadImage.png){data-zoomable}
 
 ### 方案二：将图片转为 base64
 

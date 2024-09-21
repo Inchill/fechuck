@@ -11,15 +11,15 @@ Midjourney 是一款 AI 图片生成工具，最近一年来在产品和设计�
 
 通过一段文本生成图片，使用的是 `/imagine` 命令。在 `Discord` 里，首先输入 `/`，会弹出命令菜单供我们选择：
 
-![Midjourney prompts](/2024/mid-journey-prompt.png)
+![Midjourney prompts](/2024/mid-journey-prompt.png){data-zoomable}
 
 这里我们选择 `/imagine` 命令。比如我们想生成一只在草地上的小猫，我们可以这么输入：
 
-![cat prompt](/2024/cat-prompt.png)
+![cat prompt](/2024/cat-prompt.png){data-zoomable}
 
 按下回车键后，我们只需要耐心等待片刻，就可以看到生成的图片了。生成的图片如下所示：
 
-![ai cat](/2024/ai-cat.png)
+![ai cat](/2024/ai-cat.png){data-zoomable}
 
 可以看到生成了四张图片，图片下面有两行按钮，我们看下官方文档是怎么描述这些按钮的用途的。
 
@@ -41,7 +41,7 @@ R 按钮会重新生成一张图像网格。
 
 当我们点击 U 按钮选择一张图片后，Midjourney 会生成如下内容：
 
-![selected cat](/2024/selected-cat.png)
+![selected cat](/2024/selected-cat.png){data-zoomable}
 
 第一排按钮里，从左到右依次是对图片进行变化的按钮；第二排按钮是对图片进行缩放，第三排按钮是对图片进行平移，第四排按钮是收藏图片。这些按钮都是对图片进行再次加工的，我们可以借助这些按钮实现对图片的调整。
 
@@ -51,7 +51,7 @@ Prompts 的精准与否，决定了生成的图片是否更能满足我们的要
 
 Prompts 是一段简短的文本短语，Midjourney Bot 会对其进行解释以生成图像。在这个过程中会将提示中的单词和短语分解为更小的部分（称为标记），将其与其训练数据进行比较，然后用于生成图像。精心设计的 prompts 可以帮助制作独特且令人兴奋的图像。
 
-![basic prompt](/2024/basic-prompt.png)
+![basic prompt](/2024/basic-prompt.png){data-zoomable}
 
 > 最佳的实践就是尽可能提供简短的词汇去描述你想生成的事物，而不是罗列一大堆指示。除此之外，尽可能使用英文，因为 Midjourney 对中文的处理不太好。
 
@@ -64,7 +64,7 @@ Prompts 是一段简短的文本短语，Midjourney Bot 会对其进行解释以
 
 高级用法就是加参数，因为一段纯文本是不够的，需要我们添加一些参数来进一步描述我们想要的图像。就拿前面的例子来说，我们想让生成的图片有参照，就需要提供参照的图片链接。
 
-![advanced prompt](/2024/advanced-prompts.png)
+![advanced prompt](/2024/advanced-prompts.png){data-zoomable}
 
 举一个例子，我想参照加菲猫，让它坐在沙滩上，可以这样写 prompts：
 
@@ -74,7 +74,7 @@ https://upload.wikimedia.org/wikipedia/en/thumb/b/bc/Garfield_the_Cat.svg/250px-
 
 生成的图片是这样的：
 
-![garfield](/2024/garfield.png)
+![garfield](/2024/garfield.png){data-zoomable}
 
 加菲猫坐在沙滩上，但是这个背景看着在外星球，不太符合我们的期望，我们可以更精准一点：
 
@@ -82,7 +82,7 @@ https://upload.wikimedia.org/wikipedia/en/thumb/b/bc/Garfield_the_Cat.svg/250px-
 https://upload.wikimedia.org/wikipedia/en/thumb/b/bc/Garfield_the_Cat.svg/250px-Garfield_the_Cat.svg.png a cat on the beach with sunshine
 ```
 
-![garfield on beach](/2024/garfield-on-beach.png)
+![garfield on beach](/2024/garfield-on-beach.png){data-zoomable}
 
 第一张图片就比较符合我们的诉求了，我们在这张图片上继续深入，看看加了参数后会是什么样。
 
@@ -111,11 +111,11 @@ a cat on the beach with sunshine --cref https://upload.wikimedia.org/wikipedia/e
 
 最终生成的图片如下：
 
-![garfield cat on the beach with sunshine](/2024/garfield-cat-on-the-beach-with-sunshine.png)
+![garfield cat on the beach with sunshine](/2024/garfield-cat-on-the-beach-with-sunshine.png){data-zoomable}
 
 这里的第三张图片就很有意思，我选择了 U3 按钮，然后点击了 vary subtle，生成的图像格子如下：
 
-![garfield cat vary subtle](/2024/garfield-cat-vary-subtle.png)
+![garfield cat vary subtle](/2024/garfield-cat-vary-subtle.png){data-zoomable}
 
 还是很有意思的，这些参数能够极大程度地帮助我们创作出我们想要的图像。
 
@@ -135,7 +135,7 @@ generate a totoro with Picasso line drawing style
 
 Midjourney 输出如下：
 
-![totoro picasso](/2024/totoro-picasso.png)
+![totoro picasso](/2024/totoro-picasso.png){data-zoomable}
 
 让我们加点调味剂，加一些参数让其更加抽象随机，在上述命令后添加 --chaos 50，
 
@@ -145,11 +145,11 @@ generate a totoro logo more abstract with Picasso line drawing style --chaos 60
 
 Midjourney 输出如下：
 
-![totoro more abstract](/2024/totoro-more-abstract.png)
+![totoro more abstract](/2024/totoro-more-abstract.png){data-zoomable}
 
 经过加工后，生成了以下图片，其中第三张就适合作为 logo。
 
-![more cute totoro](/2024/more-cute-totoro.png)
+![more cute totoro](/2024/more-cute-totoro.png){data-zoomable}
 
 ### 生成 icon
 
@@ -163,11 +163,11 @@ a cartoon sloth --cref https://cdn3.iconfinder.com/data/icons/animal-emoji/50/Sl
 
 生成的图片格子如下：
 
-![cartoon sloth](/2024/cartoon-sloth.png)
+![cartoon sloth](/2024/cartoon-sloth.png){data-zoomable}
 
 选取第一张，作为新的图标，再作一些微调，最终效果如下：
 
-![sloth icon](/favicon.ico)
+![sloth icon](/favicon.ico){data-zoomable}
 
 ### 生成海报图片
 
@@ -187,11 +187,11 @@ a cartoon sloth --cref https://cdn3.iconfinder.com/data/icons/animal-emoji/50/Sl
 
 生成的初版图如下：
 
-![summer traveling](/2024/summer-traveling.png)
+![summer traveling](/2024/summer-traveling.png){data-zoomable}
 
 前面提到过动漫风格参数需要加 --niji, 我们试着加上 --niji 5 参数。最终的 prompts 如下：`a woman on the beach, lying on a chair, sunbathing, in the style of 2d comics --niji 5`。
 
-![summer traveling with niji](/2024/summer-traveling-with-niji.png)
+![summer traveling with niji](/2024/summer-traveling-with-niji.png){data-zoomable}
 
 #### 父亲节海报
 
@@ -200,11 +200,11 @@ a cartoon sloth --cref https://cdn3.iconfinder.com/data/icons/animal-emoji/50/Sl
 
 输出初版图如下：
 
-![father and son](/2024/father-son.png)
+![father and son](/2024/father-son.png){data-zoomable}
 
 这里对第三张图片进行一些调整，继续升级后输出如下：
 
-![father hold son](/2024/father-hold-son.png)
+![father hold son](/2024/father-hold-son.png){data-zoomable}
 
 ## 总结
 

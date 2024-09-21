@@ -8,7 +8,7 @@
 
 在现实世界中，我们经常会看到各种阻尼效果：汽车轮胎的减震、拉开弹弓弹射、荡秋千逐渐到达最高点。在程序世界里，阻尼效应又被叫做“橡皮筋”效果，作为程序员肯定对这些场景不陌生：列表的的下拉刷新、拖拽触碰边界时的阻尼、以及炫酷的碰撞粒子回弹。
 
-![damped spring](/2024/damping/Damped_spring.gif)
+![damped spring](/2024/damping/Damped_spring.gif){data-zoomable}
 
 在物理学和工程学上，阻尼的力学模型一般是一个与振动速度大小成正比，与振动速度方向相反的力，该模型称为粘性（或黏性）阻尼模型，是工程中应用最广泛的阻尼模型。粘性阻尼可表示为以下式子：
 
@@ -20,7 +20,7 @@ $$ {\displaystyle \mathbf {F} =-c\mathbf {v} } $$
 
 物体的阻尼运动，一定是随着时间的推移，其速率会越来越小，直到趋于 0。这种速率随着时间的变化，我们可以通过贝塞尔曲线来表达。
 
-![cubic-bezier](/2024/damping/cubic-bezier.png)
+![cubic-bezier](/2024/damping/cubic-bezier.png){data-zoomable}
 
 举一个简单的例子，我们希望一个 div 盒子能够遵循阻尼运动。
 
@@ -52,7 +52,7 @@ setTimeout(() => {
 
 效果图如下，随着时间的推移，div 的运动速率逐渐减小，直到为 0。
 
-![damping](/2024/damping/damping.gif)
+![damping](/2024/damping/damping.gif){data-zoomable}
 
 在这里，我们使用了 css 里的 cubic-bezier 函数去模拟这个阻尼效果。
 
@@ -68,11 +68,11 @@ $$ y = a * (1 - e^{-bx}) $$
 
 这里将 a 和 b 都设置为 1，在 [desmos](https://www.desmos.com/calculator?lang=zh-CN) 网站上，最终得到的图形如下：
 
-![latex-1](/2024/damping/latex-1.png)
+![latex-1](/2024/damping/latex-1.png){data-zoomable}
 
 如果我们将常数 b 设置为更大一点，将会得到如下图形：
 
-![latex-2](/2024/damping/latex-2.png)
+![latex-2](/2024/damping/latex-2.png){data-zoomable}
 
 这个效果就比较符合我们想要的下拉阻尼效果，那么应该如何映射为可编程模型呢？
 
@@ -137,19 +137,19 @@ list.addEventListener('touchmove', (event) => {
 
 下面是浏览器模拟下拉效果：
 
-![pulldown](/2024/damping/pulldown.gif)
+![pulldown](/2024/damping/pulldown.gif){data-zoomable}
 
 出现了一个很明显的问题，就是下拉的一瞬间，top 值发生了陡增，立马变为了 50px，显然这不符合预期。因为 a 值过大，所以我们需要调整参数 b：
 
-![latex-3](/2024/damping/latex-3.png)
+![latex-3](/2024/damping/latex-3.png){data-zoomable}
 
 重新设置参数 a 和 b 之后，在浏览器模拟下拉效果如下：
 
-![pulldown damping](/2024/damping/pulldown-damping.gif)
+![pulldown damping](/2024/damping/pulldown-damping.gif){data-zoomable}
 
 为了在真机上测试，需要先阻止掉浏览器默认事件（比如触发浏览器下拉刷新），在真机上的效果如下：
 
-![pulldown damping mobile](/2024/damping/pulldown-damping-m.gif)
+![pulldown damping mobile](/2024/damping/pulldown-damping-m.gif){data-zoomable}
 
 ## 回弹
 
@@ -185,7 +185,7 @@ $$ y = a * e^{-bx} $$
 
 和前面推导的阻尼近视公式相反，其对应的图像如下：
 
-![bounce latex](/2024/damping/bounce-latex.png)
+![bounce latex](/2024/damping/bounce-latex.png){data-zoomable}
 
 还是以上面的例子继续，我们把 CSS 动效都去掉，然后将回弹效果转换为代码：
 
@@ -214,7 +214,7 @@ const bounceBack = () => {
 }
 ```
 
-![bounce back](/2024/damping/bounce-back.gif)
+![bounce back](/2024/damping/bounce-back.gif){data-zoomable}
 
 ## 编程模型
 
@@ -286,7 +286,7 @@ const bounceBack = () => {
 
 对应的效果如下：
 
-![bounce lerp](/2024/damping/bounce-lerp.gif)
+![bounce lerp](/2024/damping/bounce-lerp.gif){data-zoomable}
 
 ## 完整 demo 代码
 

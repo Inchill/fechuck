@@ -12,13 +12,13 @@
 
 ### sampleBits
 
-![bit depth](/2024/audio/bit-depth.png)
+![bit depth](/2024/audio/bit-depth.png){data-zoomable}
 
 sampleBits 采样位数，也称为位深 bit depth ，可以理解数字音频设备处理声音的解析度，即对声音的辨析度。就像表示颜色的位数一样（8 位表示 256 种颜色，16位表示 65536 种颜色），有 8、16、24 位等。这个数值越大，解析度就越高，录制和回放的声音就越真实。对于专业录制音频的设备来说，还会使用 32 位，但是目前一般都使用 16 位。
 
 ### sampleRate
 
-![sample rate](/2024/audio/sample-rate.webp)
+![sample rate](/2024/audio/sample-rate.webp){data-zoomable}
 
 sampleRate 采样率，就是对声音信息 1 秒钟采样多少次，以记录成数字信息。如 CD 音频是 44.1KHz 采样率，它对声音以每秒 44100 次的频率来记录信息。原则上采样率越高，声音的质量越好。一般为 11025、16000、22050、24000、44100、48000，默认为浏览器自带的采样率。
 
@@ -38,7 +38,7 @@ numChannels 声道数，由于音频的采集和播放是可以叠加的，因�
 
 我们常见的音频格式，其实指的是音频编码压缩格式，常见的有 MP3，AAC，OGG，WMA，Opus，FLAC，APE，m4a，AMR 等。音频编码就是指将获取到的音频数据按约定格式进行转换。编码时通常会对数据进行一定程度上的压缩，也因此分为 2 类：有损格式和无损格式。不同的格式有不同的采样率，采样位数，声道数，压缩率，编码格式等等，它们之间存在一定的差异，并且不同系统和平台的支持程度不同。
 
-![audio format](/2024/audio/format.webp)
+![audio format](/2024/audio/format.webp){data-zoomable}
 
 我们重点关注下 html5 支持的音频格式：
 
