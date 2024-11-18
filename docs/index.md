@@ -4,12 +4,12 @@ layout: home
 
 hero:
   name: "休言的博客"
-  text: "使用 VitePress 创建的博客，用来记录技术文章"
-  tagline: 坚持做正确的事
+  text: "使用 VitePress 创建的博客，用来记录我的程序员生涯"
+  tagline: Stay humble.
   actions:
     - theme: brand
       text: 最新文章
-      link: /2024/canvas-tainted
+      link: /2024/the-8-fonts-you-must-know
     - theme: alt
       text: 关于
       link: /about/
