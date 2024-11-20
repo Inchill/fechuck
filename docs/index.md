@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: 最新文章
-      link: /2024/the-8-fonts-you-must-know
+      link: /2024/lcp
     - theme: alt
       text: 关于
       link: /about/

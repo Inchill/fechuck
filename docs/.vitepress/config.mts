@@ -11,7 +11,7 @@ export default defineConfig({
     logo: '/favicon.ico',
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: '文章', link: '/2024/the-8-fonts-you-must-know' },
+      { text: '文章', link: '/2024/lcp' },
       { text: '关于', link: '/about/' },
     ],
 
@@ -27,6 +27,7 @@ export default defineConfig({
       {
         text: '2024',
         items: [
+          { text: '前端性能监控指标之 LCP', link: '/2024/lcp' },
           { text: '你不得不了解的 8 种字体', link: '/2024/the-8-fonts-you-must-know' },
           { text: 'rrweb 录制 canvas 被污染', link: '/2024/canvas-tainted' },
           { text: '如何统计页面的 PV&UV？', link: '/2024/pv' },
