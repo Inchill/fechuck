@@ -11,7 +11,7 @@ export default defineConfig({
     logo: '/favicon.ico',
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: '文章', link: '/2024/lcp' },
+      { text: '文章', link: '/2025/antd-using' },
       { text: '关于', link: '/about/' },
     ],
 
@@ -24,6 +24,12 @@ export default defineConfig({
     },
 
     sidebar: [
+      {
+        text: '2025',
+        items: [
+          { text: 'antd 使用小记录', link: '/2025/antd-using' }
+        ]
+      },
       {
         text: '2024',
         items: [
