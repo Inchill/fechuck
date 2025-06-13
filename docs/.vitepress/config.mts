@@ -11,7 +11,7 @@ export default defineConfig({
     logo: '/favicon.ico',
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: '文章', link: '/2025/antd-using' },
+      { text: '文章', link: '/2025/nginx' },
       { text: '关于', link: '/about/' },
     ],
 
@@ -27,6 +27,7 @@ export default defineConfig({
       {
         text: '2025',
         items: [
+          { text: 'Nginx 日常使用', link: '/2025/nginx' },
           { text: 'antd 使用小记录', link: '/2025/antd-using' }
         ]
       },
