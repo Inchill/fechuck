@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: 最新文章
-      link: /2025/nginx
+      link: /2025/claude-mcp
     - theme: alt
       text: 关于
       link: /about/
