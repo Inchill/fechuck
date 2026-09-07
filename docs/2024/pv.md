@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # 如何统计页面的 PV&UV？
 
 `PV`(page view) 是页面浏览量，`UV`(Unique visitor)用户访问量。`PV` 只要访问一次页面就算一次，`UV` 同一天内多次访问只算一次。

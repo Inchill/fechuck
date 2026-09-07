@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # 小程序内嵌 h5 如何跳转其它小程序？
 
 ![landscape](/landscape.jpg){data-zoomable}

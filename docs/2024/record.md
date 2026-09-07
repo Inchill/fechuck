@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # 学习记录
 
 ## yarn link 和 npm link

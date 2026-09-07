@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # npm 发布包调试
 
 ## 安装新包后项目 node_modules 丢失了 css-loader

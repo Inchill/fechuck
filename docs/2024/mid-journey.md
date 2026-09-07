@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # Midjourney 的基本使用
 
 Midjourney 是一款 AI 图片生成工具，最近一年来在产品和设计领域非常流行。作为 web 开发，天然地会和图片打交道，于是也对 Midjourney 进行了一番探索。和 ChatGPT 一样，高效地生成我们想要的

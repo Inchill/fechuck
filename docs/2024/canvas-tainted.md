@@ -1,6 +1,8 @@
-# rrweb 录制 canvas 被污染
+---
+outline: deep
+---
 
-[[toc]]
+# rrweb 录制 canvas 被污染
 
 ## 背景
 

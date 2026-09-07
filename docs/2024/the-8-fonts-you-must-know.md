@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # 【译】你不得不了解的 8 种字体
 
 ![header](/2024/8-fonts/header.webp){data-zoomable}

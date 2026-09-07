@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # web 音频基础
 
 [[toc]]
