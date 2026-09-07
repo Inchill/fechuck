@@ -5,3 +5,258 @@
 .medium-zoom-image {
     z-index: 2001;
 }
+
+/* 生命周期对比卡片：传统多页应用 vs 单页应用
+   配色沿用原信息图的 leak / stable 两组 token */
+.lifecycle-compare,
+.fit-grid {
+    --stable: #147a5a;
+    --stable-soft: rgba(20, 122, 90, 0.14);
+    --stable-line: rgba(20, 122, 90, 0.3);
+    --stable-ink: #0f5f46;
+    --leak: #c85a1d;
+    --leak-soft: rgba(200, 90, 29, 0.14);
+    --leak-line: rgba(200, 90, 29, 0.3);
+    --leak-ink: #a2470f;
+}
+
+.dark .lifecycle-compare,
+.dark .fit-grid {
+    --stable: #3ddc9a;
+    --stable-soft: rgba(61, 220, 154, 0.16);
+    --stable-line: rgba(61, 220, 154, 0.32);
+    --stable-ink: #3ddc9a;
+    --leak: #ff8f4d;
+    --leak-soft: rgba(255, 143, 77, 0.16);
+    --leak-line: rgba(255, 143, 77, 0.32);
+    --leak-ink: #ff8f4d;
+}
+
+.lifecycle-compare {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.lifecycle-compare .card {
+    background: var(--vp-c-bg-soft);
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 12px;
+    padding: 18px 20px;
+}
+
+.lifecycle-compare .card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.lifecycle-compare .tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.lifecycle-compare .tag.stable {
+    color: var(--stable-ink);
+    background: var(--stable-soft);
+}
+
+.lifecycle-compare .tag.leak {
+    color: var(--leak-ink);
+    background: var(--leak-soft);
+}
+
+.lifecycle-compare .timeline {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 18px;
+}
+
+/* 原信息图的三色段：靠色相和深浅表达状态推移。
+   每段额外加一圈内描边，保证浅色段在白底卡片上也有边界 */
+.lifecycle-compare .seg {
+    flex: 1;
+    height: 28px;
+    border-radius: 4px;
+}
+
+/* 三段同色 = 水位始终不变（不要给最后一段加深，那会读成「在恶化」） */
+.lifecycle-compare .seg.stable {
+    background: var(--stable-soft);
+    box-shadow: inset 0 0 0 1px var(--stable-line);
+}
+
+.lifecycle-compare .seg.warm {
+    background: linear-gradient(90deg, var(--stable-soft), var(--leak-soft));
+    box-shadow: inset 0 0 0 1px var(--stable-line);
+}
+
+.lifecycle-compare .seg.hot {
+    background: linear-gradient(90deg, var(--leak-soft), var(--leak));
+    box-shadow: inset 0 0 0 1px var(--leak-line);
+}
+
+.lifecycle-compare .seg.burn {
+    background: var(--leak);
+}
+
+.lifecycle-compare .card p {
+    margin: 14px 0 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--vp-c-text-2);
+}
+
+.lifecycle-compare .axis {
+    margin-top: 8px;
+    font-size: 11.5px;
+    color: var(--vp-c-text-3);
+    text-align: right;
+}
+
+/* 泄漏源头卡片网格 */
+.leak-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin: 24px 0;
+}
+
+.leak-grid .card {
+    background: var(--vp-c-bg-soft);
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 12px;
+    padding: 18px 20px;
+}
+
+.leak-grid .head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.leak-grid .icon {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--vp-c-bg);
+    border: 1px solid var(--vp-c-divider);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.leak-grid .icon svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: var(--vp-c-brand-1);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.leak-grid .title {
+    font-size: 14.5px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.leak-grid .pct {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--vp-c-danger-1);
+    background: var(--vp-c-danger-soft);
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+
+.leak-grid p {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--vp-c-text-2);
+}
+
+/* 适用场景对照：适合 / 不适合 */
+.fit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.fit-grid .card {
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 12px;
+    padding: 18px 20px;
+}
+
+.fit-grid .card.yes {
+    background: var(--stable-soft);
+    border-color: var(--stable-line);
+}
+
+.fit-grid .card.no {
+    background: var(--leak-soft);
+    border-color: var(--leak-line);
+}
+
+.fit-grid .title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.fit-grid .card.yes .title {
+    color: var(--stable-ink);
+}
+
+.fit-grid .card.no .title {
+    color: var(--leak-ink);
+}
+
+/* 覆盖 .vp-doc 默认的列表样式，换成 ✓ / × 前缀 */
+.fit-grid ul {
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.fit-grid li {
+    position: relative;
+    margin: 0;
+    padding: 5px 0 5px 20px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--vp-c-text-2);
+}
+
+.fit-grid li::before {
+    position: absolute;
+    left: 0;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.fit-grid .card.yes li::before {
+    content: "✓";
+    color: var(--stable-ink);
+}
+
+.fit-grid .card.no li::before {
+    content: "×";
+    color: var(--leak-ink);
+}
