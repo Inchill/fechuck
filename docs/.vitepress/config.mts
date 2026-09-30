@@ -12,6 +12,29 @@ function extractTitle(src?: string): string {
   return m ? m[1].trim() : ''
 }
 
+// RSS 摘要兜底：没写 description 时，取正文第一个普通段落（与 posts.data 的规则一致）
+function extractExcerpt(src?: string): string {
+  if (!src) return ''
+  const body = src.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '').replace(/```[\s\S]*?```/g, '')
+  const buf: string[] = []
+  for (const raw of body.split(/\r?\n/)) {
+    const line = raw.trim()
+    if (!line) {
+      if (buf.length) break
+      continue
+    }
+    if (/^(#|>|[-*+]\s|\d+\.\s|\||<|!\[|---|===)/.test(line)) {
+      if (buf.length) break
+      continue
+    }
+    buf.push(line)
+  }
+  const text = buf.join(' ').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').replace(/[`*_~]/g, '').replace(/\s+/g, ' ').trim()
+  const stop = text.search(/[。！？]/)
+  if (stop >= 0 && stop < 100) return text.slice(0, stop + 1)
+  return text.length > 100 ? text.slice(0, 100) + '…' : text
+}
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "休言的博客",
@@ -111,12 +134,14 @@ export default defineConfig({
           title: extractTitle(e.src) || e.url,
           id: `${hostname}${e.url}`,
           link: `${hostname}${e.url}`,
-          description: e.frontmatter.description ?? '',
+          description: e.frontmatter.description ?? extractExcerpt(e.src),
           date: new Date(e.frontmatter.date)
         })
       })
 
-    writeFileSync(path.join(config.outDir, 'feed.xml'), feed.rss2())
+    // 挂上 XSL 样式表：浏览器直接打开 feed.xml 时显示成订阅说明页（public/feed.xsl），阅读器不受影响
+    const rss = feed.rss2().replace(/^(<\?xml[^>]*\?>)/, '$1\n<?xml-stylesheet type="text/xsl" href="/feed.xsl"?>')
+    writeFileSync(path.join(config.outDir, 'feed.xml'), rss)
 
     // 分享卡片图片：每篇文章 / 随想一张，另加一张全站默认图
     const og: OgEntry[] = entries
