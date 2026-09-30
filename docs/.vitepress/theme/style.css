@@ -121,11 +121,16 @@
 
 /* 注意：VitePress 组件自带的 scoped 样式（.VPNav[data-v-xxx]）优先级更高，
    会把这里的 transition 覆盖掉，所以加 #app 前缀抬高优先级 */
-#app .VPNav {
-    transition:
-        transform 420ms var(--ease-out),
-        opacity 420ms var(--ease-out);
-    will-change: transform;
+/* 只在桌面端（导航栏是 fixed、会做下滚隐藏）加过渡。
+   不能在手机端加 will-change / transform：它会让导航栏变成菜单弹出层的定位参照，
+   弹出层被压在 64px 高的导航栏里，点开菜单什么都看不到 */
+@media (min-width: 960px) {
+    #app .VPNav {
+        transition:
+            transform 420ms var(--ease-out),
+            opacity 420ms var(--ease-out);
+        will-change: transform;
+    }
 }
 
 #app .VPNavBar {

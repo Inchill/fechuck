@@ -47,6 +47,12 @@ export default defineConfig({
       label: '本页目录'
     },
 
+    // 手机菜单 / 明暗开关的文案改成中文（默认是英文）
+    darkModeSwitchLabel: '明暗主题',
+    lightModeSwitchTitle: '切换到亮色',
+    darkModeSwitchTitle: '切换到暗色',
+    returnToTopLabel: '回到顶部',
+
     lastUpdated: {
       text: '最后更新'
     },
