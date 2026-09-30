@@ -1,3 +1,9 @@
+---
+draft: true
+date: 2025-06-13
+outline: deep
+---
+
 # Nginx 日常使用
 
 ![banner](/2025/nginx/banner.avif){data-zoomable}

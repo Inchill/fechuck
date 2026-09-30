@@ -1,3 +1,9 @@
+---
+draft: true
+date: 2025-06-13
+outline: deep
+---
+
 # typescript 使用
 
 ## 类型继承与交叉类型

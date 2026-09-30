@@ -1,9 +1,847 @@
-.medium-zoom-overlay {
-    z-index: 2000;
+/* ============================================================
+   全站设计地基（阶段 0）
+   把内存泄漏信息图的设计语言系统化：token → VitePress 变量 → 排版节奏
+   dark-first：亮色值放 :root，暗色值放 .dark，config 里默认暗色
+   ============================================================ */
+
+:root {
+    /* 原始调色板 —— 亮色（沿用信息图 light 分支） */
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #f1f5f6;
+    --border: #dce4e8;
+    --border-soft: #e8eef1;
+    --text: #101820;
+    --text-2: #55666e;
+    --text-3: #8a9aa2;
+    --leak: #c85a1d;
+    --leak-soft: rgba(200, 90, 29, 0.10);
+    --stable: #147a5a;
+    --stable-soft: rgba(20, 122, 90, 0.10);
+    --info: #1f6fb2;
+    --info-soft: rgba(31, 111, 178, 0.08);
+
+    /* 字阶（模块比 ~1.2，base 16px） */
+    --step--1: 0.833rem;
+    --step-0: 1rem;
+    --step-1: 1.2rem;
+    --step-2: 1.44rem;
+    --step-3: 1.728rem;
+    --step-4: 2.074rem;
+    --step-5: 2.488rem;
+
+    /* 间距节奏（4 / 8 基） */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+
+    /* 缓动与时长（苹果感） */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --dur-fast: 150ms;
+    --dur-base: 250ms;
+    --dur-slow: 400ms;
 }
 
-.medium-zoom-image {
-    z-index: 2001;
+.dark {
+    /* 原始调色板 —— 暗色（信息图 dark 分支，全站默认） */
+    --bg: #0b0f14;
+    --surface: #121920;
+    --surface-2: #182029;
+    --border: #26323c;
+    --border-soft: #1c2530;
+    --text: #e7edf1;
+    --text-2: #93a5b1;
+    --text-3: #5d6e79;
+    --leak: #ff8f4d;
+    --leak-soft: rgba(255, 143, 77, 0.14);
+    --stable: #3ddc9a;
+    --stable-soft: rgba(61, 220, 154, 0.14);
+    --info: #6cb6f5;
+    --info-soft: rgba(108, 182, 245, 0.12);
+}
+
+/* ---- 映射到 VitePress 品牌变量：默认主题组件自动换肤 ---- */
+:root {
+    --vp-c-bg: var(--bg);
+    --vp-c-bg-alt: var(--surface);
+    --vp-c-bg-elv: var(--surface);
+    --vp-c-bg-soft: var(--surface-2);
+    --vp-c-divider: var(--border);
+    --vp-c-border: var(--border);
+    --vp-c-gutter: var(--border-soft);
+
+    --vp-c-text-1: var(--text);
+    --vp-c-text-2: var(--text-2);
+    --vp-c-text-3: var(--text-3);
+
+    /* 品牌 = info 蓝（链接 / 按钮 / 焦点强调） */
+    --vp-c-brand-1: var(--info);
+    --vp-c-brand-2: var(--info);
+    --vp-c-brand-3: var(--info);
+    --vp-c-brand-soft: var(--info-soft);
+    --vp-c-brand-softer: var(--info-soft);
+
+    /* 语义色：危险 = leak 橙，成功/提示 = stable 绿 */
+    --vp-c-danger-1: var(--leak);
+    --vp-c-danger-2: var(--leak);
+    --vp-c-danger-3: var(--leak);
+    --vp-c-danger-soft: var(--leak-soft);
+    --vp-c-tip-1: var(--stable);
+    --vp-c-tip-2: var(--stable);
+    --vp-c-tip-3: var(--stable);
+    --vp-c-tip-soft: var(--stable-soft);
+
+    /* 字体：Latin=IBM Plex Sans，代码=JetBrains Mono，CJK 回落系统 */
+    --vp-font-family-base: "IBM Plex Sans", -apple-system, BlinkMacSystemFont,
+        "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Segoe UI", Roboto,
+        sans-serif;
+    --vp-font-family-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo,
+        Monaco, Consolas, "Liberation Mono", monospace;
+
+    /* 首页 hero：name 用 info→stable 渐变 */
+    --vp-home-hero-name-color: transparent;
+    --vp-home-hero-name-background: linear-gradient(
+        120deg,
+        var(--info) 20%,
+        var(--stable)
+    );
+}
+
+/* ---- 导航栏：顶部透明，滚动后毛玻璃；下滚隐藏、上滚出现（class 由 navScroll.ts 切换） ---- */
+:root {
+    --vp-nav-bg-color: color-mix(in srgb, var(--vp-c-bg) 72%, transparent);
+    --vp-local-nav-bg-color: color-mix(in srgb, var(--vp-c-bg) 72%, transparent);
+}
+
+/* 注意：VitePress 组件自带的 scoped 样式（.VPNav[data-v-xxx]）优先级更高，
+   会把这里的 transition 覆盖掉，所以加 #app 前缀抬高优先级 */
+#app .VPNav {
+    transition:
+        transform 420ms var(--ease-out),
+        opacity 420ms var(--ease-out);
+    will-change: transform;
+}
+
+#app .VPNavBar {
+    transition:
+        background-color 400ms var(--ease-out),
+        -webkit-backdrop-filter 400ms var(--ease-out),
+        backdrop-filter 400ms var(--ease-out);
+}
+
+html.nav-scrolled .VPNavBar,
+.VPLocalNav {
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* 回到顶部时完全透明，也不要底部分隔线 */
+@media (min-width: 960px) {
+    html:not(.nav-scrolled) .VPNavBar {
+        background-color: transparent !important;
+    }
+    html:not(.nav-scrolled) .VPNavBar .divider-line {
+        background-color: transparent !important;
+    }
+    #app .VPNavBar .divider-line {
+        transition: background-color 400ms var(--ease-out);
+    }
+
+    /* 桌面端导航是 fixed 的，才做隐藏；键盘聚焦在导航里时不隐藏 */
+    html.nav-hidden #app .VPNav:not(:focus-within) {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+/* ---- 明暗切换的圆形扩散（配合 index.ts 里的 View Transitions） ---- */
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+    transition: none !important;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+::view-transition-old(root),
+.dark::view-transition-new(root) {
+    z-index: 1;
+}
+::view-transition-new(root),
+.dark::view-transition-old(root) {
+    z-index: 9999;
+}
+
+/* ---- 自制首页：清掉 layout:page 的容器约束，交给 CustomHome 自己控宽 ---- */
+.home-landing .VPPage,
+.home-landing .vp-doc {
+    padding: 0 !important;
+}
+.home-landing .vp-doc > div {
+    max-width: none !important;
+}
+/* page 布局默认给正文加的容器上下留白也清掉，hero 自己控节奏 */
+.home-landing.VPContent.is-home,
+.home-landing .VPPage .container {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* ---- 右侧「本页目录」：长文（如 MCP 那篇 30+ 标题）不再溢出被截断 ----
+   VitePress 的 .aside-container 本就是 fixed + 100vh + overflow-y:auto，
+   但默认把滚动条藏了（scrollbar-width:none），长目录看起来像"跑出屏幕"。
+   这里显式给一条纤细滚动条 + 收紧行高，让长目录在视口内可滚、可见、更紧凑。 */
+.VPDoc .aside-container {
+    scrollbar-width: thin;
+    scrollbar-color: var(--vp-c-divider) transparent;
+    overscroll-behavior: contain;
+}
+.VPDoc .aside-container::-webkit-scrollbar {
+    display: block;
+    width: 6px;
+}
+.VPDoc .aside-container::-webkit-scrollbar-thumb {
+    background: var(--vp-c-divider);
+    border-radius: 3px;
+}
+.VPDoc .aside-container::-webkit-scrollbar-thumb:hover {
+    background: var(--vp-c-brand-1);
+}
+/* 收紧目录行高，一屏能多放几条。
+   行高用固定像素（20px + 上下 3px = 每行 26px），左侧高亮竖条才能精确对齐：
+   VitePress 把竖条放在「条目顶部 + 7px」处（它默认按 32px 行高设计），
+   这里把竖条改成 16px 高并上移 2px，正好落在 26px 行的正中间 */
+.VPDocAsideOutline .outline-link {
+    line-height: 20px;
+    padding: 3px 0;
+}
+#app .VPDocAsideOutline .outline-marker {
+    height: 16px;
+    margin-top: -2px;
+}
+
+/* ============================================================
+   文章正文：简约之中带一点美感
+   思路：少一点线和框，多一点留白；层级靠字号和字重，不靠装饰
+   ============================================================ */
+
+/* 代码相关的 VitePress 变量：行内代码去掉蓝色，改成中性色 */
+:root {
+    --vp-code-color: var(--text);
+    --vp-code-bg: var(--surface-2);
+    --vp-code-block-bg: #f6f8f9;
+    --vp-code-line-height: 1.75;
+}
+.dark {
+    --vp-code-block-bg: #0f151b;
+}
+
+::selection {
+    background: color-mix(in srgb, var(--info) 26%, transparent);
+}
+
+/* ---- 标题 ---- */
+.vp-doc h1 {
+    font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.22;
+    margin-bottom: 28px;
+    text-wrap: balance;
+}
+
+/* 标题后的第一段作为导语：大一号、淡一档 */
+.vp-doc h1 + p {
+    font-size: 1.125rem;
+    line-height: 1.85;
+    color: var(--vp-c-text-2);
+}
+
+/* h2 去掉默认的分隔线，靠留白和字重区分段落 */
+.vp-doc h2 {
+    margin-top: 72px;
+    padding-top: 0;
+    border-top: none;
+    font-size: clamp(1.45rem, 2.4vw, 1.75rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+}
+
+.vp-doc h3 {
+    margin-top: 44px;
+    font-size: 1.25rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+}
+
+.vp-doc h4 {
+    margin-top: 32px;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.vp-doc .header-anchor {
+    color: var(--vp-c-text-3);
+    font-weight: 400;
+}
+
+/* ---- 正文 ---- */
+.vp-doc p,
+.vp-doc li {
+    font-size: 16.5px;
+    line-height: 1.85;
+    letter-spacing: 0.01em;
+}
+
+.vp-doc p {
+    margin: 18px 0;
+}
+
+.vp-doc strong {
+    font-weight: 600;
+    color: var(--vp-c-text-1);
+}
+
+/* 06 链接下划线生长：平时无下划线，悬停时从左往右长出，移开时从右侧收走
+   用背景渐变而不是 ::after，这样跨行的长链接每一行都有下划线
+   只作用于 Markdown 正文里的链接（没有 class）；列表、卡片等组件里的链接自带 class，不受影响 */
+.vp-doc a:not([class]) {
+    color: var(--vp-c-brand-1);
+    font-weight: 500;
+    text-decoration: none;
+    background: linear-gradient(currentColor, currentColor) no-repeat right bottom / 0 1px;
+    padding-bottom: 1px;
+    transition: background-size 400ms var(--ease-out);
+}
+.vp-doc a:not([class]):hover {
+    background-size: 100% 1px;
+    background-position: left bottom;
+}
+
+/* 行内代码：中性底色 + 极细描边 */
+.vp-doc :not(pre) > code {
+    padding: 0.15em 0.42em;
+    border-radius: 6px;
+    border: 1px solid var(--border-soft);
+    font-size: 0.86em;
+    font-weight: 500;
+    word-break: break-word;
+}
+.vp-doc a > code {
+    color: inherit;
+}
+
+/* ---- 列表 ---- */
+.vp-doc ul,
+.vp-doc ol {
+    padding-left: 1.4em;
+}
+.vp-doc li + li {
+    margin-top: 6px;
+}
+.vp-doc ul > li::marker {
+    color: var(--vp-c-text-3);
+}
+.vp-doc ol > li::marker {
+    color: var(--vp-c-text-3);
+    font-family: var(--vp-font-family-mono);
+    font-size: 0.88em;
+}
+
+/* ---- 引用：一道品牌色细线，文字退一档 ---- */
+.vp-doc blockquote {
+    margin: 28px 0;
+    padding: 2px 0 2px 20px;
+    border-left: 2px solid var(--vp-c-brand-1);
+}
+.vp-doc blockquote > p {
+    font-size: 16px;
+    color: var(--vp-c-text-2);
+}
+
+/* ---- 代码块：大圆角 + 细边，不要重阴影 ---- */
+.vp-doc div[class*='language-'] {
+    margin: 24px 0;
+    border-radius: 14px;
+    border: 1px solid var(--border-soft);
+}
+.vp-doc div[class*='language-'] code {
+    font-size: 13.5px;
+}
+.vp-doc [class*='language-'] > span.lang {
+    top: 10px;
+    right: 14px;
+    font-family: var(--vp-font-family-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--vp-c-text-3);
+}
+
+/* ---- 图片：圆角 + 一圈发丝描边，独占一段时居中留白 ---- */
+.vp-doc img {
+    border-radius: 12px;
+}
+.vp-doc p > img:only-child {
+    display: block;
+    margin: 32px auto;
+    box-shadow:
+        0 0 0 1px var(--vp-c-divider),
+        0 24px 48px -32px rgba(16, 24, 32, 0.35);
+}
+.dark .vp-doc p > img:only-child {
+    box-shadow:
+        0 0 0 1px var(--vp-c-divider),
+        0 24px 48px -28px rgba(0, 0, 0, 0.8);
+}
+
+/* ---- 表格：去掉斑马纹和竖线，只留横向发丝线 ---- */
+.vp-doc table {
+    margin: 28px 0;
+    border-collapse: collapse;
+    font-size: 14.5px;
+}
+.vp-doc tr,
+.vp-doc tr:nth-child(2n) {
+    background: transparent;
+    border-top: none;
+}
+.vp-doc th,
+.vp-doc td {
+    padding: 11px 16px 11px 0;
+    border: none;
+    border-bottom: 1px solid var(--vp-c-divider);
+}
+.vp-doc th {
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--vp-c-text-2);
+    border-bottom-color: var(--vp-c-text-3);
+}
+
+/* ---- 分隔线：换成三个点 ---- */
+.vp-doc hr {
+    height: auto;
+    margin: 56px 0;
+    border: none;
+    text-align: center;
+}
+.vp-doc hr::after {
+    content: '· · ·';
+    font-size: 18px;
+    letter-spacing: 0.6em;
+    color: var(--vp-c-text-3);
+}
+
+/* ---- 提示块（::: tip / > [!NOTE] 等）：去边框，大圆角 ---- */
+.vp-doc .custom-block {
+    margin: 28px 0;
+    padding: 16px 20px;
+    border: none;
+    border-radius: 14px;
+}
+.vp-doc .custom-block p,
+.vp-doc .custom-block li {
+    font-size: 15px;
+    line-height: 1.75;
+}
+.vp-doc .custom-block :not(pre) > code {
+    color: var(--vp-c-text-1);
+    background: color-mix(in srgb, var(--vp-c-text-1) 7%, transparent);
+    border-color: transparent;
+}
+.vp-doc .custom-block .custom-block-title {
+    font-size: 13px;
+    letter-spacing: 0.02em;
+}
+
+/* ---- 右侧目录：激活项用品牌色 ---- */
+.VPDocAsideOutline .outline-title {
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--vp-c-text-3);
+}
+.VPDocAsideOutline .outline-link {
+    font-size: 13px;
+}
+.VPDocAsideOutline .outline-link.active {
+    color: var(--vp-c-brand-1);
+    font-weight: 500;
+}
+
+/* 目录折叠：只展开当前所在章节的小节，其余章节只显示标题，长文目录不再一路拖到屏幕底部
+   目录右上角可切换「展开全部」（html.outline-expanded），方便直接点选任意小节 */
+html:not(.outline-expanded) .VPDocAsideOutline .root > li:not(:has(.outline-link.active)) > .nested {
+    display: none;
+}
+.VPDocAsideOutline .nested {
+    animation: outline-in var(--dur-base) var(--ease-out);
+}
+/* 只做淡入：不能用 transform，否则 VitePress 用 offsetTop 计算的高亮竖条会错位 */
+@keyframes outline-in {
+    from {
+        opacity: 0;
+    }
+}
+
+/* ============================================================
+   动效（01 / 02 / 08 / 11；逻辑见 motion.ts）
+   ============================================================ */
+
+/* 01 页面切换：站内跳转后，正文区从下方带一点模糊浮上来
+   注意不要作用在含 position:fixed 子元素的容器上（如 .aside、首页背景），transform 会让它们错位 */
+html.route-enter .VPDoc .content-container,
+html.route-enter .Layout:not(.home-landing) .VPPage,
+html.route-enter .nf {
+    animation: route-in 460ms var(--ease-out) backwards;
+}
+html.route-enter .VPDoc .aside {
+    animation: route-fade 460ms var(--ease-out) backwards;
+}
+@keyframes route-in {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+        filter: blur(4px);
+    }
+}
+@keyframes route-fade {
+    from {
+        opacity: 0;
+    }
+}
+
+/* 02 文章标题逐字浮现 */
+.vp-doc h1 .tc {
+    display: inline-block;
+    animation: title-char 700ms var(--ease-out) backwards;
+}
+@keyframes title-char {
+    from {
+        opacity: 0;
+        filter: blur(8px);
+        transform: translateY(0.22em);
+    }
+}
+
+/* 11 正文段落滚动渐入（只播一次） */
+.vp-doc .rv {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+        opacity 700ms var(--ease-out),
+        transform 700ms var(--ease-out);
+}
+.vp-doc .rv.rv-in {
+    opacity: 1;
+    transform: none;
+}
+
+/* 08 代码复制反馈：按钮轻按回弹，左侧浮出「已复制」 */
+:root {
+    --vp-code-copy-copied-text-content: '已复制';
+}
+.vp-doc [class*='language-'] > button.copy {
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background-size: 16px;
+}
+.vp-doc [class*='language-'] > button.copy.copied,
+.vp-doc [class*='language-'] > button.copy:hover.copied {
+    border-radius: 8px;
+    border-color: color-mix(in srgb, var(--stable) 45%, transparent);
+    animation: copy-pop 380ms var(--ease-out);
+}
+.vp-doc [class*='language-'] > button.copy.copied::before,
+.vp-doc [class*='language-'] > button.copy:hover.copied::before {
+    position: absolute;
+    top: 50%;
+    right: calc(100% + 8px);
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--stable);
+    background: var(--stable-soft);
+    animation: copy-tip 320ms var(--ease-out) backwards;
+}
+@keyframes copy-pop {
+    35% {
+        transform: scale(0.86);
+    }
+}
+@keyframes copy-tip {
+    from {
+        opacity: 0;
+        transform: translate(6px, -50%);
+    }
+}
+
+/* ---- 长代码块折叠（逻辑见 codeFold.ts） ---- */
+.vp-doc .code-fold {
+    position: relative;
+}
+.vp-doc .code-fold pre {
+    overflow-y: hidden;
+    transition: max-height 420ms var(--ease-out);
+}
+/* 底部操作条：折叠时是一层渐隐遮罩 + 居中按钮，展开后变成一条普通的底栏 */
+.vp-doc .code-fold-bar {
+    display: flex;
+    justify-content: center;
+    padding: 6px 0 10px;
+}
+.vp-doc .code-fold.is-folded .code-fold-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    align-items: flex-end;
+    height: 96px;
+    padding-bottom: 14px;
+    border-radius: 0 0 14px 14px;
+    background: linear-gradient(to bottom, transparent, var(--vp-code-block-bg) 78%);
+    pointer-events: none;
+}
+.vp-doc .code-fold-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--vp-c-divider);
+    background: var(--vp-c-bg);
+    color: var(--vp-c-text-2);
+    font-size: 12.5px;
+    font-weight: 500;
+    pointer-events: auto;
+    transition:
+        color var(--dur-fast) var(--ease-out),
+        border-color var(--dur-fast) var(--ease-out);
+}
+.vp-doc .code-fold-btn:hover {
+    color: var(--vp-c-brand-1);
+    border-color: color-mix(in srgb, var(--vp-c-brand-1) 50%, var(--vp-c-divider));
+}
+.vp-doc .code-fold-btn svg {
+    transition: transform var(--dur-base) var(--ease-out);
+}
+
+/* 本页没有目录时（比如随想只有正文），隐藏目录上方的「展开全部」按钮 */
+.aside-content:not(:has(.VPDocAsideOutline.has-outline)) .outline-toggle-row {
+    display: none;
+}
+
+/* ---- 手机端：正文稍小，代码块贴边时去掉圆角描边 ---- */
+@media (max-width: 640px) {
+    .vp-doc p,
+    .vp-doc li {
+        font-size: 16px;
+    }
+    .vp-doc h2 {
+        margin-top: 56px;
+    }
+    .vp-doc div[class*='language-'] {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+}
+
+/* ---- 首页 features 卡片：干净的抬升卡 + 悬浮微交互 ---- */
+.VPFeatures .VPFeature {
+    background: var(--vp-c-bg-alt);
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 16px;
+    padding: var(--space-6);
+    transition: transform var(--dur-base) var(--ease-out),
+        border-color var(--dur-base) var(--ease-out),
+        box-shadow var(--dur-base) var(--ease-out);
+}
+
+.VPFeatures .VPFeature:hover {
+    transform: translateY(-4px);
+    border-color: var(--vp-c-brand-1);
+    box-shadow: 0 12px 32px rgba(16, 24, 32, 0.10);
+}
+
+.dark .VPFeatures .VPFeature:hover {
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* 图标框：去掉默认灰块，换成品牌色淡染 */
+.VPFeatures .VPFeature .icon {
+    background: var(--vp-c-brand-soft);
+    border: none;
+    border-radius: 12px;
+    transition: transform var(--dur-base) var(--ease-out);
+}
+
+.VPFeatures .VPFeature:hover .icon {
+    transform: scale(1.06);
+}
+
+.VPFeatures .VPFeature .title {
+    font-size: var(--step-1);
+    font-weight: 650;
+    letter-spacing: -0.01em;
+}
+
+.VPFeatures .VPFeature .details {
+    margin-top: var(--space-3);
+    line-height: 1.7;
+    color: var(--vp-c-text-2);
+}
+
+/* 减少动效偏好：全站降级 */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ============================================================
+   以下为原有样式
+   ============================================================ */
+
+/* ---- 图片灯箱（PhotoSwipe）：跟随明暗主题 ---- */
+.vp-doc img:not(a img):not(.no-zoom img) {
+    cursor: zoom-in;
+}
+
+.pswp {
+    /* 毛玻璃：背景是「模糊后的当前页面 + 一层半透明站点色」，永远和网站同一个色调 */
+    --pswp-bg: rgba(241, 245, 246, 0.64);
+    --pswp-placeholder-bg: rgba(16, 24, 32, 0.06);
+    --pswp-icon-color: #101820;
+    --pswp-icon-color-secondary: #f1f5f6;
+    --pswp-icon-stroke-color: #f1f5f6;
+    --pswp-icon-stroke-width: 1.5px;
+    --pswp-error-text-color: #101820;
+    --pswp-transition-duration: 360ms;
+    transition:
+        -webkit-backdrop-filter 360ms var(--ease-out),
+        backdrop-filter 360ms var(--ease-out);
+}
+.dark .pswp {
+    --pswp-bg: rgba(11, 15, 20, 0.62);
+    --pswp-placeholder-bg: rgba(255, 255, 255, 0.04);
+    --pswp-icon-color: #e7edf1;
+    --pswp-icon-color-secondary: #121920;
+    --pswp-icon-stroke-color: #121920;
+    --pswp-error-text-color: #e7edf1;
+}
+/* 模糊加在 PhotoSwipe 最外层上（加在内部背景层上看不到页面），打开时才生效 */
+.pswp.pswp--glass {
+    -webkit-backdrop-filter: blur(22px) saturate(1.3);
+    backdrop-filter: blur(22px) saturate(1.3);
+}
+
+/* 自定义缩放控件：− 100% + */
+.pswp__button--zoom-out,
+.pswp__button--zoom-in {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    color: var(--pswp-icon-color);
+}
+
+.pswp__button--zoom-level {
+    width: auto;
+    min-width: 56px;
+    padding: 0 4px;
+    color: var(--pswp-icon-color);
+    font-family: var(--vp-font-family-base);
+    font-size: 13px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+}
+
+.pswp__button--zoom-out:disabled,
+.pswp__button--zoom-in:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.pswp--zoom-disabled .pswp__button--zoom-out,
+.pswp--zoom-disabled .pswp__button--zoom-in,
+.pswp--zoom-disabled .pswp__button--zoom-level {
+    display: none;
+}
+
+/* 放大的图片加一圈发丝描边 + 柔和投影，白底截图也能和浅色背景分开 */
+.pswp__img:not(.pswp__img--placeholder) {
+    border-radius: 10px;
+    box-shadow:
+        0 0 0 1px rgba(16, 24, 32, 0.08),
+        0 24px 60px -24px rgba(16, 24, 32, 0.3);
+}
+.dark .pswp__img:not(.pswp__img--placeholder) {
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 30px 70px -24px rgba(0, 0, 0, 0.7);
+}
+
+.pswp__counter {
+    font-family: var(--vp-font-family-base);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.7;
+    text-shadow: none;
+}
+
+.pswp__caption {
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    max-width: min(720px, calc(100% - 32px));
+    padding: 8px 14px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.55);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+    pointer-events: none;
+    transition: opacity var(--pswp-transition-duration) var(--ease-out);
+}
+
+.pswp--ui-visible .pswp__caption {
+    opacity: 1;
+}
+
+.pswp:not(.pswp--ui-visible) .pswp__caption {
+    opacity: 0;
 }
 
 /* 生命周期对比卡片：传统多页应用 vs 单页应用

@@ -1,10 +1,9 @@
 ---
+date: 2024-06-05
 outline: deep
 ---
 
 # web 音频基础
-
-[[toc]]
 
 ## 背景
 
