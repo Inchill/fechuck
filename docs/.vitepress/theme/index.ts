@@ -19,6 +19,7 @@ import OutlineToggle from './components/OutlineToggle.vue'
 import SiteFooter from './components/SiteFooter.vue'
 import NotFound from './components/NotFound.vue'
 import SelectionShare from './components/SelectionShare.vue'
+import MusicPlayer from './components/MusicPlayer.vue'
 
 // 切换明暗：新主题从按钮位置圆形扩散铺满全屏（View Transitions）
 // 不支持该 API 或用户偏好减少动效时，退回普通切换
@@ -72,7 +73,7 @@ const Layout = defineComponent({
                 'aside-outline-before': () => h(OutlineToggle),
                 'not-found': () => h(NotFound),
                 // 页脚 + 右下角悬浮的「回到顶部」（不放在目录里，长目录时也始终看得到）
-                'layout-bottom': () => [h(SiteFooter), h(BackToTop), h(SelectionShare)]
+                'layout-bottom': () => [h(SiteFooter), h(BackToTop), h(SelectionShare), h(MusicPlayer)]
             })
     }
 })

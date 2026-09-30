@@ -270,6 +270,7 @@ function roll() {
   display: flex;
   align-items: baseline;
   gap: 8px;
+  white-space: nowrap; /* 「个网站」不能被挤成两行 */
   color: var(--vp-c-text-2);
   font-size: 14px;
 }
@@ -292,7 +293,9 @@ function roll() {
 .dice {
   display: inline-flex;
   align-items: center;
+  flex: none;
   gap: 7px;
+  white-space: nowrap;
   height: 38px;
   padding: 0 18px;
   border-radius: 999px;
@@ -809,6 +812,30 @@ function roll() {
   color: var(--vp-c-text-3);
 }
 
+@media (max-width: 480px) {
+  /* 窄屏：数字缩小，放不下时「随便逛逛」换到下一行 */
+  .stats {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .big {
+    gap: 6px;
+  }
+  .big b {
+    font-size: 2.4rem;
+  }
+  .big b.sm {
+    font-size: 1.5rem;
+  }
+  .big em {
+    margin: 0 2px;
+  }
+  .dice {
+    height: 34px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+}
 @media (max-width: 768px) {
   .feat-grid {
     grid-template-columns: 1fr;

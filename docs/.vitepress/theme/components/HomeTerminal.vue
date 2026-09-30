@@ -63,7 +63,7 @@ function print(...ls: Line[]) {
   })
 }
 
-const COMMANDS = ['help', 'whoami', 'ls', 'cat', 'open', 'grep', 'random', 'theme', 'posts', 'notes', 'bookmarks', 'surf', 'about', 'github', 'clear']
+const COMMANDS = ['help', 'whoami', 'ls', 'cat', 'open', 'grep', 'random', 'theme', 'posts', 'notes', 'bookmarks', 'surf', 'music', 'about', 'github', 'clear']
 
 const HELP: Line[] = [
   { kind: 'out', text: '可用命令：' },
@@ -78,6 +78,7 @@ const HELP: Line[] = [
   { kind: 'out', text: '  notes       随想' },
   { kind: 'out', text: '  bookmarks   我收藏的网站' },
   { kind: 'out', text: '  surf        随机逛一个收藏的网站' },
+  { kind: 'out', text: '  music       放 / 停音乐（music rock 切风格，输 music ? 看全部）' },
   { kind: 'out', text: '  about       关于我' },
   { kind: 'out', text: '  github      去 GitHub' },
   { kind: 'out', text: '  clear       清屏' },
@@ -164,6 +165,19 @@ function run(raw: string) {
       if (!site) break
       print({ kind: 'out', text: `→ 随便逛逛：${site.title}（${site.host}）` })
       window.open(site.url, '_blank', 'noopener') // 必须在按键事件里同步打开，否则会被拦截
+      break
+    }
+    case 'music': {
+      const names: Record<string, string> = { lofi: 'lo-fi', 'lo-fi': 'lo-fi', ambient: '氛围', jazz: '爵士', chip: '8-bit', '8bit': '8-bit', rainy: '雨天', rain: '雨天', rock: '摇滚', folk: '民谣', synth: 'Synthwave', synthwave: 'Synthwave', guofeng: '古风', chinese: '古风', musicbox: '八音盒', box: '八音盒' }
+      const ids: Record<string, string> = { 'lo-fi': 'lofi', 氛围: 'ambient', 爵士: 'jazz', '8-bit': 'chip', 雨天: 'rainy', 摇滚: 'rock', 民谣: 'folk', Synthwave: 'synth', 古风: 'guofeng', 八音盒: 'musicbox' }
+      const st = args[0]?.toLowerCase()
+      if (st && !names[st]) {
+        print({ kind: 'out', text: '用法：music 播放 / 暂停；music lofi | ambient | jazz | chip | rainy | rock | folk | synth | guofeng | musicbox 切换风格' })
+        break
+      }
+      const style = st ? ids[names[st]] : undefined
+      window.dispatchEvent(new CustomEvent('fechuck:music', { detail: style }))
+      print({ kind: 'out', text: style ? `♪ 切到「${names[st!]}」，看左下角的唱片` : '♪ 看左下角的唱片（再输一次 music 播放 / 暂停）' })
       break
     }
     case 'about':

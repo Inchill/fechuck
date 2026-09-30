@@ -201,6 +201,7 @@ function start() {
   if (!blocks.length) return
   if (hasSpeech.value) pickVoice()
   active.value = true
+  window.dispatchEvent(new CustomEvent('fechuck:reading', { detail: true })) // 音乐播放器压低音量
   playBlock(from)
 }
 
@@ -232,6 +233,7 @@ function cycleRate() {
 }
 
 function stop() {
+  if (active.value) window.dispatchEvent(new CustomEvent('fechuck:reading', { detail: false }))
   gen++
   silence()
   active.value = false
