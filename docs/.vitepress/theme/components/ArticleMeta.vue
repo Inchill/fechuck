@@ -3,6 +3,7 @@ import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import { useData } from 'vitepress'
 import { data as posts } from '../posts.data'
 import { data as notes } from '../notes.data'
+import ReadAloud from './ReadAloud.vue'
 
 const { page } = useData()
 
@@ -70,6 +71,7 @@ onBeforeUnmount(() => {
       <span>约 {{ minutes }} 分钟读完</span>
       <span class="sep" aria-hidden="true"></span>
       <span>{{ words }} 字</span>
+      <ReadAloud />
     </div>
   </template>
 </template>

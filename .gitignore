@@ -5,3 +5,6 @@ dist
 # VitePress
 docs/.vitepress/cache
 docs/.vitepress/dist
+
+# 朗读音频由 GitHub Actions 生成，存在 tts-audio 分支
+docs/public/tts

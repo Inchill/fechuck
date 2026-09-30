@@ -4,6 +4,9 @@
 // 同时带上最近的小节锚点，不支持 Text Fragment 的浏览器至少能定位到那一节
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useData } from 'vitepress'
+import { data as posts } from '../posts.data'
+import { data as notes } from '../notes.data'
+import { renderQuoteCard } from '../quoteCard'
 
 const { page } = useData()
 
@@ -40,7 +43,7 @@ function update() {
   const rect = cur.r.getBoundingClientRect()
   const below = rect.top < 90 // 太靠上（被导航栏挡住）就放到选区下方
   pos.value = {
-    x: Math.min(Math.max(rect.left + rect.width / 2, 110), innerWidth - 110),
+    x: Math.min(Math.max(rect.left + rect.width / 2, 160), innerWidth - 160),
     y: below ? rect.bottom + 10 : rect.top - 10,
     below
   }
@@ -107,6 +110,52 @@ async function copyLink() {
   await copy(link())
   flash('已复制链接')
 }
+/* ---------- 生成图片 ---------- */
+const card = ref('') // 图片 data URL
+const cardName = ref('quote.png')
+const canCopyImg = ref(false)
+const cardDone = ref('')
+
+function pageDate() {
+  const here = '/' + page.value.relativePath.replace(/\.md$/, '')
+  const same = (u: string) => u.replace(/\.html$/, '') === here
+  const d = (posts.find((p) => same(p.url)) ?? notes.find((n) => same(n.url)))?.date ?? ''
+  return d.replaceAll('-', '.')
+}
+
+async function makeCard() {
+  const quote = text
+  hide()
+  window.getSelection()?.removeAllRanges()
+  card.value = await renderQuoteCard({
+    quote,
+    title: page.value.title || document.title,
+    date: pageDate(),
+    dark: document.documentElement.classList.contains('dark')
+  })
+  const slug = page.value.relativePath.replace(/\.md$/, '').split('/').pop()
+  cardName.value = `fechuck-${slug}-quote.png`
+  cardDone.value = ''
+  document.addEventListener('keydown', onCardKey)
+}
+function closeCard() {
+  card.value = ''
+  document.removeEventListener('keydown', onCardKey)
+}
+function onCardKey(e: KeyboardEvent) {
+  if (e.key === 'Escape') closeCard()
+}
+async function copyImage() {
+  try {
+    const blob = await (await fetch(card.value)).blob()
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+    cardDone.value = '已复制'
+  } catch {
+    cardDone.value = '复制失败'
+  }
+  setTimeout(() => (cardDone.value = ''), 1500)
+}
+
 function flash(msg: string) {
   done.value = msg
   clearTimeout(hideTimer)
@@ -131,6 +180,7 @@ const onSelChange = () => {
 let coarse = false
 onMounted(() => {
   // 触屏设备有系统自带的选词菜单，不再叠一层
+  canCopyImg.value = typeof ClipboardItem !== 'undefined' && !!navigator.clipboard?.write
   coarse = window.matchMedia('(pointer: coarse)').matches
   if (coarse) return
   document.addEventListener('mouseup', onUp)
@@ -146,6 +196,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('mousedown', onDown)
   document.removeEventListener('selectionchange', onSelChange)
   window.removeEventListener('scroll', hide)
+  document.removeEventListener('keydown', onCardKey)
   clearTimeout(hideTimer)
 })
 </script>
@@ -175,6 +226,15 @@ onBeforeUnmount(() => {
           </svg>
           复制链接
         </button>
+        <span class="sep" aria-hidden="true"></span>
+        <button type="button" @click="makeCard">
+          <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
+            <rect x="2.5" y="3" width="11" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.4" />
+            <path d="M3 11.5 6.3 8.2l2.2 2.2 1.6-1.6 3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
+            <circle cx="10.6" cy="6" r="1" fill="currentColor" />
+          </svg>
+          生成图片
+        </button>
       </template>
       <span v-else class="done">
         <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
@@ -184,6 +244,21 @@ onBeforeUnmount(() => {
       </span>
     </div>
   </Transition>
+
+  <Teleport to="body">
+    <Transition name="card">
+      <div v-if="card" class="qc-mask" @click.self="closeCard">
+        <div class="qc-box" role="dialog" aria-label="引用卡片">
+          <img :src="card" alt="引用卡片" class="qc-img" />
+          <div class="qc-actions">
+            <a class="qc-btn primary" :href="card" :download="cardName">保存图片</a>
+            <button v-if="canCopyImg" type="button" class="qc-btn" @click="copyImage">{{ cardDone || '复制图片' }}</button>
+            <button type="button" class="qc-btn" @click="closeCard">关闭</button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -255,6 +330,84 @@ button:hover {
   gap: 5px;
   padding: 5px 12px;
   color: var(--stable);
+}
+
+/* ---------- 引用卡片预览 ---------- */
+.qc-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: color-mix(in srgb, var(--vp-c-bg) 62%, transparent);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+}
+.qc-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-height: 100%;
+}
+.qc-img {
+  display: block;
+  width: min(420px, 86vw);
+  max-height: calc(100vh - 140px);
+  object-fit: contain;
+  border-radius: 14px;
+  border: 1px solid var(--vp-c-divider);
+  box-shadow:
+    0 30px 60px -24px color-mix(in srgb, var(--info) 40%, transparent),
+    0 10px 24px -10px rgba(0, 0, 0, 0.25);
+}
+.qc-actions {
+  display: flex;
+  gap: 10px;
+}
+.qc-btn {
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.qc-btn:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+.qc-btn.primary {
+  border-color: transparent;
+  background: linear-gradient(100deg, var(--info), var(--stable));
+  color: #0b0f14;
+}
+.qc-btn.primary:hover {
+  color: #0b0f14;
+  filter: brightness(1.06);
+}
+.card-enter-active,
+.card-leave-active {
+  transition: opacity 220ms var(--ease-out);
+}
+.card-enter-active .qc-box {
+  transition:
+    scale 320ms var(--ease-out),
+    translate 320ms var(--ease-out);
+}
+.card-enter-from,
+.card-leave-to {
+  opacity: 0;
+}
+.card-enter-from .qc-box {
+  scale: 0.96;
+  translate: 0 10px;
 }
 
 /* 从选区方向轻轻弹出 */

@@ -13,7 +13,7 @@ on:
 
 # 设置 GITHUB_TOKEN 的权限，以允许部署到 GitHub Pages
 permissions:
-  contents: read
+  contents: write # 需要把生成的朗读音频推到 tts-audio 分支
   pages: write
   id-token: write
 
@@ -47,6 +47,30 @@ jobs:
         run: pnpm install # 或 pnpm install / yarn install / bun install
       - name: Build with VitePress
         run: pnpm docs:build # 或 pnpm docs:build / yarn docs:build / bun run docs:build
+
+      # ---------- 文章朗读音频（scripts/tts.mjs）----------
+      # 已生成的音频存在 tts-audio 分支（只保留最新一份，不累积历史），每次部署只补新增或改动的段落
+      - name: Restore TTS audio
+        run: |
+          mkdir -p docs/public/tts
+          if git ls-remote --exit-code --heads origin tts-audio > /dev/null; then
+            git fetch --depth=1 origin tts-audio
+            git archive FETCH_HEAD | tar -x -C docs/public/tts
+          fi
+      - name: Install edge-tts
+        run: pipx install edge-tts
+      - name: Generate TTS audio
+        continue-on-error: true # 语音接口出问题也照常部署，页面会退回浏览器自带的声音
+        run: pnpm tts
+      - name: Save TTS audio to tts-audio branch
+        if: github.ref == 'refs/heads/master'
+        run: |
+          cd docs/public/tts
+          [ -n "$(ls -A)" ] || exit 0
+          git init -q -b tts-audio
+          git add -A
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -qm "chore: 更新朗读音频"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" tts-audio
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:

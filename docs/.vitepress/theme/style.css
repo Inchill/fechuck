@@ -1103,3 +1103,13 @@ html.route-enter .VPDoc .aside {
     content: "×";
     color: var(--leak-ink);
 }
+
+/* ---------- 朗读：当前段高亮 ---------- */
+.vp-doc .tts-reading {
+  border-radius: 6px;
+  background: var(--vp-c-brand-soft);
+  box-shadow: 0 0 0 6px var(--vp-c-brand-soft);
+  transition:
+    background-color 300ms var(--ease-out),
+    box-shadow 300ms var(--ease-out);
+}
