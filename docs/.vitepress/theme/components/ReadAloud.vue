@@ -9,10 +9,11 @@ import { collectBlocks, audioId } from '../ttsBlocks.mjs'
 
 const route = useRoute()
 const hasSpeech = ref(false)
-const manifest = ref<{ profile: string; ids: Set<string> } | null>(null)
+const manifest = ref<{ profile: string; ext: string; ids: Set<string> } | null>(null)
 const supported = computed(() => hasSpeech.value || !!manifest.value)
 const active = ref(false)
 const paused = ref(false)
+const loading = ref(false) // 音频还没开始出声
 const idx = ref(0)
 const total = ref(0)
 const RATES = [1, 1.25, 1.5, 0.8]
@@ -40,7 +41,7 @@ async function loadManifest() {
     const r = await fetch(`/tts/${key}.json`)
     if (!r.ok || key !== pageKey()) return
     const m = await r.json()
-    manifest.value = { profile: m.profile ?? m.voice, ids: new Set(m.blocks) }
+    manifest.value = { profile: m.profile ?? m.voice, ext: m.ext ?? 'mp3', ids: new Set(m.blocks) }
   } catch {}
 }
 
@@ -106,8 +107,26 @@ function mark(i: number) {
 
 function silence() {
   clearTimeout(nextTimer)
+  cancelAnimationFrame(raf)
   audio?.pause()
   if (hasSpeech.value) speechSynthesis.cancel()
+}
+
+// edge-tts 的每段音频开头有约 0.19s、结尾有约 0.57s 的静音；
+// 开头跳过一点，结尾提前切到下一段，段落之间只留一个自然的短停顿
+const LEAD = 0.12
+const TAIL = 0.36
+let raf = 0
+
+function watchTail(g: number, i: number) {
+  cancelAnimationFrame(raf)
+  const tick = () => {
+    if (g !== gen || !audio) return
+    const d = audio.duration
+    if (!audio.paused && d && isFinite(d) && audio.currentTime >= d - TAIL) return playBlock(i + 1)
+    raf = requestAnimationFrame(tick)
+  }
+  raf = requestAnimationFrame(tick)
 }
 
 function playBlock(i: number) {
@@ -122,44 +141,65 @@ function playBlock(i: number) {
   if (b.src) {
     mode = 'audio'
     audio ??= new Audio()
-    audio.src = b.src
+    loading.value = true
+    audio.src = `${b.src}#t=${LEAD}` // 媒体片段：直接从 0.12s 开始播
     audio.playbackRate = rate.value
-    audio.onended = () => {
-      if (g !== gen) return
-      nextTimer = window.setTimeout(() => g === gen && playBlock(i + 1), 220) // 段与段之间留一点呼吸
-    }
-    audio.onerror = () => g === gen && playBlock(i + 1)
+    audio.onplaying = () => g === gen && (loading.value = false)
+    // 标签页在后台时 rAF 会暂停，靠 ended 兜底
+    audio.onended = () => g === gen && playBlock(i + 1)
+    // 这段音频放不了（网络出错等），这一段改用浏览器语音读
+    audio.onerror = () => g === gen && speakBlock(g, b)
     audio.play().catch(() => {})
-    // 预取下一段，切段时几乎没有停顿
-    const next = blocks[i + 1]?.src
-    if (next) {
-      preload ??= new Audio()
-      preload.preload = 'auto'
-      preload.src = next
-    }
-  } else if (hasSpeech.value) {
-    mode = 'speech'
-    chunks = split(b.text)
-    chunkIdx = 0
-    speakChunk(g)
-  } else {
-    playBlock(i + 1)
-  }
+    watchTail(g, i)
+    preloadBlock(i + 1) // 预取下一段，切段时几乎没有停顿
+  } else speakBlock(g, b)
 }
 
-function start() {
+function preloadBlock(i: number) {
+  const src = blocks[i]?.src
+  if (!src) return
+  preload ??= new Audio()
+  preload.preload = 'auto'
+  preload.src = src
+}
+
+function speakBlock(g: number, b: Block) {
+  if (g !== gen) return
+  if (!hasSpeech.value) return playBlock(idx.value + 1)
+  mode = 'speech'
+  chunks = split(b.text)
+  chunkIdx = 0
+  speakChunk(g)
+}
+
+// 准备要读的段落和起点；鼠标移到「朗读」按钮上就先准备好，并预取第一段音频，点下去立刻出声
+let preparedFor = ''
+function prepare() {
+  if (active.value) return 0
   blocks = collectBlocks(document.querySelector('.vp-doc')) as Block[]
   const m = manifest.value
-  if (m) for (const b of blocks) {
+  // 浏览器不支持这种音频格式（极少见），整篇都用浏览器语音
+  const playable = !!m && new Audio().canPlayType(m.ext === 'm4a' ? 'audio/mp4; codecs="mp4a.40.2"' : 'audio/mpeg') !== ''
+  if (m && playable) for (const b of blocks) {
     const id = audioId(m.profile, b.text)
-    if (m.ids.has(id)) b.src = `/tts/a/${id}.mp3`
+    if (m.ids.has(id)) b.src = `/tts/a/${id}.${m.ext}`
   }
   total.value = blocks.length
-  if (!blocks.length) return
-  if (hasSpeech.value) pickVoice()
   // 从当前屏幕上第一段开始读；在页面顶部就是从标题开始
   let from = blocks.findIndex((b) => b.el.getBoundingClientRect().bottom > 80)
   if (from < 0) from = 0
+  const key = `${location.pathname}#${from}`
+  if (preparedFor !== key) {
+    preparedFor = key
+    preloadBlock(from)
+  }
+  return from
+}
+
+function start() {
+  const from = prepare()
+  if (!blocks.length) return
+  if (hasSpeech.value) pickVoice()
   active.value = true
   playBlock(from)
 }
@@ -196,6 +236,8 @@ function stop() {
   silence()
   active.value = false
   paused.value = false
+  loading.value = false
+  preparedFor = ''
   document.querySelectorAll('.tts-reading').forEach((n) => n.classList.remove('tts-reading'))
 }
 
@@ -232,7 +274,15 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <button v-if="supported" type="button" class="ra-btn" :class="{ on: active }" @click="active ? stop() : start()">
+  <button
+    v-if="supported"
+    type="button"
+    class="ra-btn"
+    :class="{ on: active }"
+    @pointerenter="prepare"
+    @focus="prepare"
+    @click="active ? stop() : start()"
+  >
     <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
       <path d="M2.5 6v4h2.5l3.5 3V3L5 6z" fill="currentColor" />
       <path d="M11 5.5a3.5 3.5 0 0 1 0 5M12.8 3.8a6 6 0 0 1 0 8.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
@@ -244,7 +294,7 @@ onBeforeUnmount(() => {
     <Transition name="ra">
       <div v-if="active" class="ra-bar" role="toolbar" aria-label="朗读控制">
         <span class="ra-prog" :style="{ transform: `scaleX(${progress})` }" aria-hidden="true"></span>
-        <span class="ra-wave" :class="{ paused }" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="ra-wave" :class="{ paused, loading: loading && !paused }" aria-hidden="true"><i></i><i></i><i></i></span>
         <span class="ra-count">{{ idx + 1 }} / {{ total }}</span>
         <button type="button" title="上一段" aria-label="上一段" @click="playBlock(idx - 1)">
           <svg viewBox="0 0 16 16" width="14" height="14"><path d="M4 3.5v9M12 3.5 6 8l6 4.5z" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" /></svg>
@@ -314,7 +364,7 @@ onBeforeUnmount(() => {
   font-size: 12.5px;
   white-space: nowrap;
 }
-:global(.dark) .ra-bar {
+.dark .ra-bar {
   background:
     linear-gradient(var(--vp-c-bg-soft), var(--vp-c-bg-soft)) padding-box,
     linear-gradient(100deg, var(--info), var(--stable)) border-box;
@@ -395,6 +445,11 @@ onBeforeUnmount(() => {
 .ra-wave.paused i {
   animation-play-state: paused;
   scale: 1 0.35;
+}
+/* 等待出声：声波慢慢呼吸 */
+.ra-wave.loading i {
+  animation-duration: 1600ms;
+  opacity: 0.55;
 }
 @keyframes ra-wave {
   0%,

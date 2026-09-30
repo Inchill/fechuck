@@ -2,6 +2,7 @@
 import { ref, shallowRef, computed, nextTick, onMounted, onBeforeUnmount, inject } from 'vue'
 import { useRouter, useData } from 'vitepress'
 import { data as posts } from '../posts.data'
+import { data as bookmarks } from '../../../bookmarks/bookmarks.data'
 
 // 终端里 ls / open 用的最近文章（loader 已按日期倒序）
 const recent = posts.slice(0, 8)
@@ -62,7 +63,7 @@ function print(...ls: Line[]) {
   })
 }
 
-const COMMANDS = ['help', 'whoami', 'ls', 'cat', 'open', 'grep', 'random', 'theme', 'posts', 'notes', 'about', 'github', 'clear']
+const COMMANDS = ['help', 'whoami', 'ls', 'cat', 'open', 'grep', 'random', 'theme', 'posts', 'notes', 'bookmarks', 'surf', 'about', 'github', 'clear']
 
 const HELP: Line[] = [
   { kind: 'out', text: '可用命令：' },
@@ -75,6 +76,8 @@ const HELP: Line[] = [
   { kind: 'out', text: '  theme       切换明暗主题' },
   { kind: 'out', text: '  posts       全部文章' },
   { kind: 'out', text: '  notes       随想' },
+  { kind: 'out', text: '  bookmarks   我收藏的网站' },
+  { kind: 'out', text: '  surf        随机逛一个收藏的网站' },
   { kind: 'out', text: '  about       关于我' },
   { kind: 'out', text: '  github      去 GitHub' },
   { kind: 'out', text: '  clear       清屏' },
@@ -152,6 +155,17 @@ function run(raw: string) {
     case 'notes':
       router.go('/notes/')
       break
+    case 'bookmarks':
+      router.go('/bookmarks/')
+      break
+    case 'surf': {
+      const sites = bookmarks.groups.flatMap((g) => g.sites)
+      const site = sites[Math.floor(Math.random() * sites.length)]
+      if (!site) break
+      print({ kind: 'out', text: `→ 随便逛逛：${site.title}（${site.host}）` })
+      window.open(site.url, '_blank', 'noopener') // 必须在按键事件里同步打开，否则会被拦截
+      break
+    }
     case 'about':
       router.go('/about/')
       break

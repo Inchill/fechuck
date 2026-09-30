@@ -1113,3 +1113,8 @@ html.route-enter .VPDoc .aside {
     background-color 300ms var(--ease-out),
     box-shadow 300ms var(--ease-out);
 }
+
+/* ---------- 书签页：手机上不需要「回到顶部」那条本地导航，吸顶工具条直接贴顶 ---------- */
+.bookmarks-page .VPLocalNav {
+  display: none;
+}

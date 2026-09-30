@@ -62,6 +62,7 @@ export default defineConfig({
     nav: [
       { text: '文章', link: '/posts/' },
       { text: '随想', link: '/notes/' },
+      { text: '书签', link: '/bookmarks/' },
       { text: '关于', link: '/about/' },
     ],
 

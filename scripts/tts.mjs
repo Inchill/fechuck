@@ -10,9 +10,9 @@
 // 临时试听别的声音：TTS_VOICE=zh-CN-YunxiNeural pnpm tts 2025/claude-mcp
 //
 // 产物：
-//   docs/public/tts/a/<id>.mp3   每段一个音频，文件名是「声音参数 + 文字」的哈希，改了哪段只重新生成哪段
+//   docs/public/tts/a/<id>.m4a   每段一个音频（edge-tts 出 mp3，再用 ffmpeg 压成 AAC），文件名是「声音参数 + 文字」的哈希，改了哪段只重新生成哪段
 //   docs/public/tts/<路径>.json  这篇文章用到的声音和段落列表
-// 依赖：edge-tts 命令行（pipx install edge-tts，或 pip3 install --user edge-tts）
+// 依赖：edge-tts 命令行（pipx install edge-tts），压缩需要 ffmpeg（brew install ffmpeg）
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, rmSync, cpSync, mkdtempSync } from 'node:fs'
 import { join, dirname, relative } from 'node:path'
 import { tmpdir } from 'node:os'
@@ -34,6 +34,9 @@ const PITCH = process.env.TTS_PITCH || config.pitch || '+0Hz'
 const VOLUME = config.volume || '+0%'
 const BIN = process.env.EDGE_TTS || 'edge-tts'
 const CONCURRENCY = config.concurrency || 4
+// 输出格式：'m4a'（AAC，体积更小，所有浏览器都能播）或 'mp3'（edge-tts 原始输出，不转码）
+const FORMAT = config.format === 'm4a' ? 'm4a' : 'mp3'
+const BITRATE = config.bitrate || '32k'
 // 同一段文字，只要声音参数变了就是另一个音频
 const profile = (voice) => [voice, RATE, PITCH, VOLUME].join('|')
 const filters = process.argv.slice(2)
@@ -47,6 +50,14 @@ try {
 } catch {
   console.error('找不到 edge-tts，先安装：pipx install edge-tts（或 pip3 install --user edge-tts）')
   process.exit(1)
+}
+if (FORMAT !== 'mp3') {
+  try {
+    await run('ffmpeg', ['-version'])
+  } catch {
+    console.error('找不到 ffmpeg，先安装：brew install ffmpeg（或在 tts.config.mjs 里把 format 设为 mp3）')
+    process.exit(1)
+  }
 }
 
 // 文章（20xx/*.html）和随想详情（notes/*.html），跳过草稿
@@ -69,6 +80,15 @@ function pages() {
 }
 
 const tmp = mkdtempSync(join(tmpdir(), 'tts-'))
+// mp3 → AAC（单声道，保留 24kHz；faststart 让浏览器边下边播）
+async function transcode(mp3, out) {
+  const tmpOut = out + '.part.m4a'
+  await run('ffmpeg', ['-v', 'error', '-y', '-i', mp3, '-c:a', 'aac', '-b:a', BITRATE, '-ac', '1', '-movflags', '+faststart', tmpOut], { timeout: 60_000 })
+  cpSync(tmpOut, out)
+  rmSync(tmpOut, { force: true })
+  rmSync(mp3, { force: true })
+}
+
 async function synth(text, file, voice) {
   const txt = join(tmp, Math.random().toString(36).slice(2) + '.txt')
   writeFileSync(txt, text)
@@ -109,13 +129,18 @@ for (const { key, voice } of items) {
   const blocks = collectBlocks(document.querySelector('.vp-doc'))
   const ids = blocks.map((b) => audioId(prof, b.text))
   const todo = blocks
-    .map((b, i) => ({ text: b.text, file: join(OUT, 'a', ids[i] + '.mp3') }))
+    .map((b, i) => ({ text: b.text, id: ids[i], file: join(OUT, 'a', `${ids[i]}.${FORMAT}`) }))
     .filter((t, i, arr) => !existsSync(t.file) && arr.findIndex((x) => x.file === t.file) === i)
   let done = 0
   try {
     await pool(todo, async (t) => {
-      await synth(t.text, t.file, voice)
-      made++
+      const mp3 = join(OUT, 'a', t.id + '.mp3')
+      // 以前生成过 mp3 的段落直接转码，不用再请求语音接口
+      if (!existsSync(mp3)) {
+        await synth(t.text, mp3, voice)
+        made++
+      }
+      if (FORMAT !== 'mp3') await transcode(mp3, t.file)
       done++
       if (process.stdout.isTTY) process.stdout.write(`\r${key}  ${done}/${todo.length}   `)
     })
@@ -127,7 +152,7 @@ for (const { key, voice } of items) {
   }
   const manifest = join(OUT, key + '.json')
   mkdirSync(dirname(manifest), { recursive: true })
-  writeFileSync(manifest, JSON.stringify({ profile: prof, blocks: ids }))
+  writeFileSync(manifest, JSON.stringify({ profile: prof, ext: FORMAT, blocks: ids }))
   console.log(`\r${key}  ${blocks.length} 段，新生成 ${todo.length} 段${voice !== VOICE ? `（${voice}）` : ''}`)
 }
 
@@ -144,7 +169,8 @@ if (!filters.length) {
   walk(OUT)
   let pruned = 0
   for (const f of readdirSync(join(OUT, 'a'))) {
-    if (!used.has(f.replace(/\.mp3$/, ''))) rmSync(join(OUT, 'a', f)), pruned++
+    const [id, ext] = f.split('.')
+    if (!used.has(id) || ext !== FORMAT) rmSync(join(OUT, 'a', f)), pruned++
   }
   if (pruned) console.log(`清理旧音频 ${pruned} 个`)
 }

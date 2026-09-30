@@ -288,7 +288,7 @@ onBeforeUnmount(() => {
   white-space: nowrap;
   user-select: none;
 }
-:global(.dark) .sel-share {
+.dark .sel-share {
   background:
     linear-gradient(var(--vp-c-bg-soft), var(--vp-c-bg-soft)) padding-box,
     var(--edge) border-box;
@@ -386,10 +386,10 @@ button:hover {
 .qc-btn.primary {
   border-color: transparent;
   background: linear-gradient(100deg, var(--info), var(--stable));
-  color: #0b0f14;
+  color: var(--vp-c-bg);
 }
 .qc-btn.primary:hover {
-  color: #0b0f14;
+  color: var(--vp-c-bg);
   filter: brightness(1.06);
 }
 .card-enter-active,

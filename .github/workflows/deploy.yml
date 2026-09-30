@@ -45,6 +45,9 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
       - name: Install dependencies
         run: pnpm install # 或 pnpm install / yarn install / bun install
+      - name: Fetch bookmark icons
+        continue-on-error: true # 抓不到的图标页面上会显示首字母，不影响部署
+        run: pnpm favicons
       - name: Build with VitePress
         run: pnpm docs:build # 或 pnpm docs:build / yarn docs:build / bun run docs:build
 
@@ -57,8 +60,10 @@ jobs:
             git fetch --depth=1 origin tts-audio
             git archive FETCH_HEAD | tar -x -C docs/public/tts
           fi
-      - name: Install edge-tts
-        run: pipx install edge-tts
+      - name: Install edge-tts and ffmpeg
+        run: |
+          pipx install edge-tts
+          command -v ffmpeg || sudo apt-get install -y ffmpeg
       - name: Generate TTS audio
         continue-on-error: true # 语音接口出问题也照常部署，页面会退回浏览器自带的声音
         run: pnpm tts

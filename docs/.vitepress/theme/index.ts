@@ -10,6 +10,7 @@ import { setupNavScroll } from './navScroll'
 import { setupMotion } from './motion'
 import PostList from './components/PostList.vue'
 import NoteList from './components/NoteList.vue'
+import Bookmarks from './components/Bookmarks.vue'
 import CustomHome from './components/CustomHome.vue'
 import PrevNext from './components/PrevNext.vue'
 import ArticleMeta from './components/ArticleMeta.vue'
@@ -84,6 +85,7 @@ export default {
         // 文章 / 随想列表组件全局注册，供 md 页面直接使用
         ctx.app.component('PostList', PostList)
         ctx.app.component('NoteList', NoteList)
+        ctx.app.component('Bookmarks', Bookmarks)
         ctx.app.component('CustomHome', CustomHome)
     },
     setup() {

@@ -15,5 +15,7 @@ export default {
   rate: '+0%', // 语速，例如 -10%、+15%
   pitch: '+0Hz', // 音调，例如 -5Hz、+10Hz
   volume: '+0%', // 音量
+  format: 'mp3', // 'mp3'：edge-tts 原始输出，音质最好；'m4a'：压成 AAC，体积小约 30%，但会有轻微杂音
+  bitrate: '32k', // m4a 的码率，24k 更小、32k 更清楚
   concurrency: 4 // 同时生成几段
 }
