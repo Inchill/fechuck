@@ -1,0 +1,20 @@
+# 欢迎搜索引擎和 AI 助手阅读、引用本站内容
+User-agent: *
+Allow: /
+
+# AI 搜索与问答（ChatGPT、Claude、Perplexity 等引用来源时会用到）
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Bingbot
+User-agent: Baiduspider
+Allow: /
+
+Sitemap: https://www.fechuck.com/sitemap.xml
