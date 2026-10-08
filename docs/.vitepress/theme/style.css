@@ -1119,6 +1119,8 @@ html.route-enter .VPDoc .aside {
 .city-page .VPLocalNav,
 .tokens-page .VPLocalNav,
 .stars-page .VPLocalNav,
+.vitals-page .VPLocalNav,
+.context-page .VPLocalNav,
 .lab-page .VPLocalNav {
   display: none;
 }

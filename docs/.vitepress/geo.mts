@@ -180,7 +180,7 @@ export function writeLlms(outDir: string, srcDir: string, entries: LlmsEntry[]) 
     '',
     `- [关于](${hostname}/about/)：作者介绍和联系方式`,
     `- [书签](${hostname}/bookmarks/)：作者收藏的网站，按 AI、电子书、工具、设计等分类`,
-    `- [实验室](${hostname}/lab/)：几个互动小实验，包括代码仓库的建造回放、文章星图、Token 显微镜、上下文窗口模拟器`,
+    `- [实验室](${hostname}/lab/)：几个互动小实验，包括代码仓库的建造回放、文章星图、Token 显微镜、上下文窗口模拟器、Web Vitals 心电图`,
     `- [全文合集](${hostname}/llms-full.txt)：所有文章和随想的完整 Markdown`,
     `- [RSS](${hostname}/feed.xml)`,
     ''

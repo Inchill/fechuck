@@ -2,7 +2,7 @@
 // 「建造回放」：把仓库画成一座等距视角的小城
 // 每栋楼是一个文件，楼高 ≈ 代码行数；拖动时间轴，按 git 提交一次次回放这座城是怎么长出来的
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { data } from '../city.data'
+import { data } from '../city.data.mts'
 
 const { paths, commits } = data
 const N = commits.length
