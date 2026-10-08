@@ -63,7 +63,7 @@ function print(...ls: Line[]) {
   })
 }
 
-const COMMANDS = ['help', 'whoami', 'ls', 'cat', 'open', 'grep', 'random', 'theme', 'posts', 'notes', 'bookmarks', 'surf', 'music', 'about', 'github', 'clear']
+const COMMANDS = ['help', 'whoami', 'ls', 'cat', 'open', 'grep', 'random', 'theme', 'posts', 'notes', 'bookmarks', 'surf', 'music', 'city', 'tokens', 'stars', 'about', 'github', 'clear']
 
 const HELP: Line[] = [
   { kind: 'out', text: '可用命令：' },
@@ -78,6 +78,9 @@ const HELP: Line[] = [
   { kind: 'out', text: '  notes       随想' },
   { kind: 'out', text: '  bookmarks   我收藏的网站' },
   { kind: 'out', text: '  surf        随机逛一个收藏的网站' },
+  { kind: 'out', text: '  city        看这个网站是怎么一步步长出来的' },
+  { kind: 'out', text: '  tokens      Token 显微镜：看文字被切成哪些 token' },
+  { kind: 'out', text: '  stars       文章星图：按内容远近排成一片星空' },
   { kind: 'out', text: '  music       放 / 停音乐（music rock 切风格，输 music ? 看全部）' },
   { kind: 'out', text: '  about       关于我' },
   { kind: 'out', text: '  github      去 GitHub' },
@@ -158,6 +161,15 @@ function run(raw: string) {
       break
     case 'bookmarks':
       router.go('/bookmarks/')
+      break
+    case 'city':
+      router.go('/lab/city.html')
+      break
+    case 'tokens':
+      router.go('/lab/tokens.html')
+      break
+    case 'stars':
+      router.go('/lab/stars.html')
       break
     case 'surf': {
       const sites = bookmarks.groups.flatMap((g) => g.sites)

@@ -2,7 +2,7 @@
 // 保证两边切出来的段落和文字完全一致，才能按内容哈希对上音频文件
 
 // 不读的部分：代码、表格、脚注、标题旁的 # 锚点等
-export const SKIP = 'div[class*="language-"], pre, table, .custom-block-title, .header-anchor, sup, .footnotes'
+export const SKIP = 'div[class*="language-"], pre, table, .custom-block-title, .header-anchor, sup, .footnotes, .cs'
 
 /** 从正文根节点（.vp-doc）按顺序取出要朗读的段落 */
 export function collectBlocks(root) {
