@@ -2,7 +2,9 @@ import { defineConfig, createContentLoader, type SiteConfig } from 'vitepress'
 import { Feed } from 'feed'
 import { writeFileSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { hostname, generateOgImages, ogHead, isOgPage, slugOf, type OgEntry } from './og.mjs'
+import { geoHead, writeLlms, draftUrls, excerptOf, type LlmsEntry } from './geo.mjs'
 
 // 从正文首个 H1 提取标题（与 posts.data.ts 保持一致）
 function extractTitle(src?: string): string {
@@ -54,8 +56,20 @@ export default defineConfig({
       href: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap'
     }],
     // RSS 订阅
-    ['link', { rel: 'alternate', type: 'application/rss+xml', title: '休言的博客', href: '/feed.xml' }]
+    ['link', { rel: 'alternate', type: 'application/rss+xml', title: '休言的博客', href: '/feed.xml' }],
+    // 给大模型看的站点索引（llms.txt 约定）
+    ['link', { rel: 'alternate', type: 'text/plain', title: 'llms.txt', href: '/llms.txt' }]
   ],
+
+  // 站点地图：搜索引擎和 AI 爬虫按它发现页面（草稿不列出）
+  sitemap: {
+    hostname,
+    transformItems(items) {
+      const drafts = draftUrls(fileURLToPath(new URL('..', import.meta.url)))
+      return items.filter((i) => !drafts.has(i.url) && !i.url.startsWith('404'))
+    }
+  },
+  lastUpdated: true,
   themeConfig: {
     logo: '/logo.svg',
     // https://vitepress.dev/reference/default-theme-config
@@ -63,6 +77,7 @@ export default defineConfig({
       { text: '文章', link: '/posts/' },
       { text: '随想', link: '/notes/' },
       { text: '书签', link: '/bookmarks/' },
+      { text: '实验室', link: '/lab/', activeMatch: '^/lab/' },
       { text: '关于', link: '/about/' },
     ],
 
@@ -99,17 +114,20 @@ export default defineConfig({
   // （在生成页面时就决定，避免先按有侧栏排版、加载后再跳到居中）
   transformPageData(pageData, { siteConfig }) {
     if (!/^(20\d\d|notes)\/(?!index\.md$).+\.md$/.test(pageData.relativePath)) return
-    if (pageData.frontmatter.aside !== undefined) return
     try {
       const src = readFileSync(path.join(siteConfig.srcDir, pageData.relativePath), 'utf8')
+      // 每篇文章自己的 meta description：没写 description 时用正文第一段，而不是全站统一的那句
+      if (!pageData.frontmatter.description) pageData.description = excerptOf(src)
+      if (pageData.frontmatter.aside !== undefined) return
       const body = src.replace(/```[\s\S]*?```/g, '')
       if (!/^#{2,3}\s/m.test(body)) pageData.frontmatter.aside = false
     } catch {}
   },
 
   // 每个页面加上分享卡片（Open Graph / Twitter）的 meta，图片由 buildEnd 生成
+  // 以及 GEO 用的结构化数据、canonical、发布时间等（见 geo.mts）
   transformHead({ pageData }) {
-    return ogHead(pageData)
+    return [...ogHead(pageData), ...geoHead(pageData)]
   },
 
   async buildEnd(config: SiteConfig) {
@@ -159,5 +177,18 @@ export default defineConfig({
         kind: rel.startsWith('notes/') ? '随想' : '文章'
       }))
     generateOgImages(config.outDir, og)
+
+    // llms.txt / llms-full.txt / 每篇文章的 .md 版本
+    const llms: LlmsEntry[] = entries
+      .filter((e) => !e.frontmatter.draft && e.frontmatter.date)
+      .sort((a, b) => +new Date(b.frontmatter.date) - +new Date(a.frontmatter.date))
+      .map((e) => ({
+        rel: e.url.replace(/^\//, '').replace(/\.html$/, '.md'),
+        title: extractTitle(e.src) || e.url,
+        date: new Date(e.frontmatter.date).toISOString().slice(0, 10),
+        desc: e.frontmatter.description ?? excerptOf(e.src ?? '', 80),
+        src: e.src ?? ''
+      }))
+    writeLlms(config.outDir, config.srcDir, llms)
   }
 })

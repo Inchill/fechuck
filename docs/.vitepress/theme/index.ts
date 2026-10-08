@@ -11,6 +11,13 @@ import { setupMotion } from './motion'
 import PostList from './components/PostList.vue'
 import NoteList from './components/NoteList.vue'
 import Bookmarks from './components/Bookmarks.vue'
+import ContextSim from './components/ContextSim.vue'
+import CityReplay from './components/CityReplay.vue'
+import TokenScope from './components/TokenScope.vue'
+import LabIndex from './components/LabIndex.vue'
+import StarMap from './components/StarMap.vue'
+import CommandPalette from './components/CommandPalette.vue'
+import PaletteButton from './components/PaletteButton.vue'
 import CustomHome from './components/CustomHome.vue'
 import PrevNext from './components/PrevNext.vue'
 import ArticleMeta from './components/ArticleMeta.vue'
@@ -73,7 +80,8 @@ const Layout = defineComponent({
                 'aside-outline-before': () => h(OutlineToggle),
                 'not-found': () => h(NotFound),
                 // 页脚 + 右下角悬浮的「回到顶部」（不放在目录里，长目录时也始终看得到）
-                'layout-bottom': () => [h(SiteFooter), h(BackToTop), h(SelectionShare), h(MusicPlayer)]
+                'nav-bar-content-before': () => h(PaletteButton),
+                'layout-bottom': () => [h(SiteFooter), h(BackToTop), h(SelectionShare), h(MusicPlayer), h(CommandPalette)]
             })
     }
 })
@@ -87,6 +95,11 @@ export default {
         ctx.app.component('PostList', PostList)
         ctx.app.component('NoteList', NoteList)
         ctx.app.component('Bookmarks', Bookmarks)
+        ctx.app.component('ContextSim', ContextSim)
+        ctx.app.component('CityReplay', CityReplay)
+        ctx.app.component('TokenScope', TokenScope)
+        ctx.app.component('LabIndex', LabIndex)
+        ctx.app.component('StarMap', StarMap)
         ctx.app.component('CustomHome', CustomHome)
     },
     setup() {

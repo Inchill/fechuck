@@ -1115,6 +1115,20 @@ html.route-enter .VPDoc .aside {
 }
 
 /* ---------- 书签页：手机上不需要「回到顶部」那条本地导航，吸顶工具条直接贴顶 ---------- */
-.bookmarks-page .VPLocalNav {
+.bookmarks-page .VPLocalNav,
+.city-page .VPLocalNav,
+.tokens-page .VPLocalNav,
+.stars-page .VPLocalNav,
+.lab-page .VPLocalNav {
   display: none;
+}
+
+/* 命令面板打开时锁住页面滚动 */
+html.palette-open {
+  overflow: hidden;
+}
+
+/* 导航栏：默认搜索位占满左侧空白，把它挪到最前，⌘K 按钮就会贴着右边的菜单 */
+.VPNavBar .content-body .VPNavBarSearch {
+  order: -1;
 }

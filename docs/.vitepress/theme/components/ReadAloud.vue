@@ -281,6 +281,7 @@ onBeforeUnmount(() => {
     type="button"
     class="ra-btn"
     :class="{ on: active }"
+    :aria-label="active ? '停止朗读' : '朗读全文'"
     @pointerenter="prepare"
     @focus="prepare"
     @click="active ? stop() : start()"
@@ -289,7 +290,7 @@ onBeforeUnmount(() => {
       <path d="M2.5 6v4h2.5l3.5 3V3L5 6z" fill="currentColor" />
       <path d="M11 5.5a3.5 3.5 0 0 1 0 5M12.8 3.8a6 6 0 0 1 0 8.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
     </svg>
-    {{ active ? '停止朗读' : '朗读' }}
+    {{ active ? '停止' : '朗读' }}
   </button>
 
   <Teleport to="body">
@@ -325,6 +326,7 @@ onBeforeUnmount(() => {
   gap: 5px;
   margin-left: auto;
   padding: 3px 10px;
+  white-space: nowrap;
   border: 1px solid var(--vp-c-divider);
   border-radius: 999px;
   font-size: 12px;

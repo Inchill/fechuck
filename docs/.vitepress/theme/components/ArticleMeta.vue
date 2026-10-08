@@ -69,8 +69,8 @@ onBeforeUnmount(() => {
       <time>{{ date }}</time>
       <span class="sep" aria-hidden="true"></span>
       <span>约 {{ minutes }} 分钟读完</span>
-      <span class="sep" aria-hidden="true"></span>
-      <span>{{ words }} 字</span>
+      <span class="sep words" aria-hidden="true"></span>
+      <span class="words">{{ words }} 字</span>
       <ReadAloud />
     </div>
   </template>
@@ -110,5 +110,18 @@ onBeforeUnmount(() => {
   border-radius: 50%;
   background: currentColor;
   opacity: 0.6;
+}
+/* 手机上收紧间距，让「朗读」按钮和日期、字数留在同一行 */
+@media (max-width: 480px) {
+  .article-meta {
+    gap: 6px 8px;
+    letter-spacing: 0;
+  }
+}
+/* 更窄的屏幕（如 360px 的安卓机）放不下就先省掉字数，阅读时长已经够用 */
+@media (max-width: 370px) {
+  .article-meta .words {
+    display: none;
+  }
 }
 </style>
