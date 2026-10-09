@@ -26,7 +26,7 @@ let chunkIdx = 0
 let gen = 0 // 每次切段 +1，旧的回调直接忽略
 let voice: SpeechSynthesisVoice | null = null
 let audio: HTMLAudioElement | null = null
-let preload: HTMLAudioElement | null = null
+let unlocked = false // audio 元素已经在用户点击里播过一次（iOS 之后才允许它自动连播）
 let mode: 'audio' | 'speech' = 'speech' // 当前这一段用哪种方式在读
 let nextTimer = 0
 
@@ -42,7 +42,56 @@ async function loadManifest() {
     if (!r.ok || key !== pageKey()) return
     const m = await r.json()
     manifest.value = { profile: m.profile ?? m.voice, ext: m.ext ?? 'mp3', ids: new Set(m.blocks) }
+    warmup()
   } catch {}
+}
+
+/* ---------- 音频预取 ---------- */
+// 用 fetch 把整段音频拉成 Blob 放在内存里，播放时把 src 换成 blob: 地址：
+// - 始终只用同一个 <audio> 播放，不再另开元素预取（两个元素之间 Range 请求的缓存基本不复用，等于下载两遍）
+// - 本地数据，跳过开头静音的 #t= seek 也不用再发请求
+const cache = new Map<string, Promise<string | null>>() // 音频地址 -> blob 地址（下载中）
+const ready = new Map<string, string>() // 音频地址 -> blob 地址（已下载好）
+
+function fetchAudio(src: string) {
+  let p = cache.get(src)
+  if (!p) {
+    p = fetch(src)
+      .then((r) => (r.ok ? r.blob() : null))
+      .then((b) => {
+        if (!b || !cache.has(src)) return null
+        const url = URL.createObjectURL(b)
+        ready.set(src, url)
+        return url
+      })
+      .catch(() => null)
+    p.then((u) => u || cache.delete(src)) // 失败了下次再试
+    cache.set(src, p)
+  }
+  return p
+}
+
+function preloadBlock(i: number) {
+  const src = blocks[i]?.src
+  if (src) fetchAudio(src)
+}
+
+function clearCache() {
+  ready.forEach((u) => URL.revokeObjectURL(u))
+  ready.clear()
+  cache.clear()
+}
+
+// 页面空闲时就把起读的前两段拉下来（标题 + 第一段，通常只有几十 KB），点「朗读」时已经在本地
+function warmup() {
+  const c = (navigator as any).connection
+  if (c?.saveData || /2g/.test(c?.effectiveType ?? '')) return // 省流量模式不预取
+  const run = () => {
+    if (active.value || !manifest.value) return
+    const from = prepare()
+    preloadBlock(from + 1)
+  }
+  'requestIdleCallback' in window ? requestIdleCallback(run, { timeout: 2000 }) : setTimeout(run, 800)
 }
 
 /* ---------- 浏览器语音（兜底） ---------- */
@@ -142,25 +191,29 @@ function playBlock(i: number) {
     mode = 'audio'
     audio ??= new Audio()
     loading.value = true
-    audio.src = `${b.src}#t=${LEAD}` // 媒体片段：直接从 0.12s 开始播
-    audio.playbackRate = rate.value
-    audio.onplaying = () => g === gen && (loading.value = false)
-    // 标签页在后台时 rAF 会暂停，靠 ended 兜底
-    audio.onended = () => g === gen && playBlock(i + 1)
-    // 这段音频放不了（网络出错等），这一段改用浏览器语音读
-    audio.onerror = () => g === gen && speakBlock(g, b)
-    audio.play().catch(() => {})
-    watchTail(g, i)
-    preloadBlock(i + 1) // 预取下一段，切段时几乎没有停顿
+    const src = b.src
+    const go = (url: string) => {
+      if (g !== gen || !audio) return
+      audio.src = `${url}#t=${LEAD}` // 媒体片段：直接从 0.12s 开始播
+      audio.playbackRate = rate.value
+      audio.onplaying = () => g === gen && (loading.value = false)
+      // 标签页在后台时 rAF 会暂停，靠 ended 兜底
+      audio.onended = () => g === gen && playBlock(i + 1)
+      // 这段音频放不了（网络出错等），这一段改用浏览器语音读
+      audio.onerror = () => g === gen && speakBlock(g, b)
+      audio.play().then(() => (unlocked = true), () => {})
+      watchTail(g, i)
+    }
+    const local = ready.get(src)
+    if (local) go(local)
+    // 正在下载：等它下完再播，别再并行下一遍。
+    // 但第一次播放必须在点击的同步调用里发生（iOS 的自动播放限制），这时直接走网络地址
+    else if (cache.has(src) && unlocked) cache.get(src)!.then((u) => go(u ?? src))
+    else go(src)
+    // 预取后面两段，切段时没有停顿；网速慢时多留一段余量
+    preloadBlock(i + 1)
+    preloadBlock(i + 2)
   } else speakBlock(g, b)
-}
-
-function preloadBlock(i: number) {
-  const src = blocks[i]?.src
-  if (!src) return
-  preload ??= new Audio()
-  preload.preload = 'auto'
-  preload.src = src
 }
 
 function speakBlock(g: number, b: Block) {
@@ -254,11 +307,14 @@ watch(
   () => route.path,
   () => {
     stop()
+    clearCache()
     loadManifest()
   }
 )
 onMounted(() => {
   hasSpeech.value = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window
+  // 朗读音频交给 Service Worker 长期缓存（docs/public/sw.js），读过的段落下次直接从本地出声；开发环境不注册
+  if (import.meta.env.PROD && 'serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {})
   loadManifest()
   if (hasSpeech.value) {
     pickVoice()
@@ -269,6 +325,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   stop()
+  clearCache()
   if (hasSpeech.value) speechSynthesis.removeEventListener?.('voiceschanged', pickVoice)
   document.removeEventListener('keydown', onKey)
   window.removeEventListener('pagehide', stop)
@@ -284,6 +341,7 @@ onBeforeUnmount(() => {
     :aria-label="active ? '停止朗读' : '朗读全文'"
     @pointerenter="prepare"
     @focus="prepare"
+    @pointerdown="prepare"
     @click="active ? stop() : start()"
   >
     <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
