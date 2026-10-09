@@ -17,6 +17,7 @@ import TokenScope from './components/TokenScope.vue'
 import LabIndex from './components/LabIndex.vue'
 import StarMap from './components/StarMap.vue'
 import VitalsMonitor from './components/VitalsMonitor.vue'
+import BoardLab from './components/BoardLab.vue'
 import ContextLab from './components/ContextLab.vue'
 import CommandPalette from './components/CommandPalette.vue'
 import PaletteButton from './components/PaletteButton.vue'
@@ -103,6 +104,7 @@ export default {
         ctx.app.component('LabIndex', LabIndex)
         ctx.app.component('StarMap', StarMap)
         ctx.app.component('VitalsMonitor', VitalsMonitor)
+        ctx.app.component('BoardLab', BoardLab)
         ctx.app.component('ContextLab', ContextLab)
         ctx.app.component('CustomHome', CustomHome)
     },

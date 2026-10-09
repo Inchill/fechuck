@@ -43,6 +43,16 @@ const items = [
     tag: '性能',
     title: 'Web Vitals 心电图',
     desc: '实时测量你正在看的这一页：LCP、CLS、INP 和主线程心跳。再亲手把它弄坏、修好。'
+  },
+  {
+    href: '/lab/board.html',
+    kind: 'board',
+    accent: '#e0703d',
+    wide: true,
+    full: true,
+    tag: '画板',
+    title: '涂鸦白板',
+    desc: '一块能直接画的白板：手写笔有压感，橡皮能只擦掉一段，画的内容只留在你自己的浏览器里。用的是我开源的 react-whiteboard 组件。'
   }
 ]
 // 心电图卡片的预览：一段心跳，中间卡住一下
@@ -75,7 +85,7 @@ const cells = Array.from({ length: 40 }, (_, i) =>
         LAB <i>/</i> 实验室
       </div>
       <h1 class="headline">几个能上手玩的<span class="grad">小实验。</span></h1>
-      <p class="sub">和 AI 时代的开发有关，点开就能玩，全部在浏览器里运行。</p>
+      <p class="sub">大多和 AI 时代的开发有关，点开就能玩，全部在浏览器里运行。</p>
       <ul class="facts">
         <li><b>{{ items.length }}</b> 个实验</li>
         <li><b>0</b> 个后端</li>
@@ -88,7 +98,7 @@ const cells = Array.from({ length: 40 }, (_, i) =>
         v-for="(it, n) in items"
         :key="it.href"
         class="card"
-        :class="['k-' + it.kind, { wide: it.wide }]"
+        :class="['k-' + it.kind, { wide: it.wide, full: it.full }]"
         :style="{ '--ac': it.accent, '--n': n }"
         :href="withBase(it.href)"
         @mousemove="spot"
@@ -123,6 +133,14 @@ const cells = Array.from({ length: 40 }, (_, i) =>
             <rect x="100" y="20" width="32" height="62" rx="3" class="stall" />
             <path :d="ecg.b" class="flat" />
             <path :d="ecg.c" class="beat b2" />
+          </svg>
+          <!-- 涂鸦白板：一笔荧光笔 + 一笔被橡皮擦断的压感笔迹 + 一个虚线框 -->
+          <svg v-else-if="it.kind === 'board'" viewBox="0 0 240 120" class="board-svg">
+            <path d="M34 34 h112" class="hl" />
+            <rect x="150" y="58" width="58" height="40" rx="3" class="box" />
+            <path d="M28 86 C46 54 62 54 72 76 S96 98 104 74" class="ink" />
+            <path d="M124 62 C134 48 146 50 152 40" class="ink i2" />
+            <circle cx="114" cy="68" r="9" class="eraser" />
           </svg>
           <!-- Token 显微镜：一句话切成彩色小块 -->
           <div v-else-if="it.kind === 'tokens'" class="toks">
@@ -274,7 +292,7 @@ const cells = Array.from({ length: 40 }, (_, i) =>
     transform: translateY(16px);
   }
 }
-/* 第一张卡片占两列，左右排：五个实验正好排成 2 + 3 */
+/* 第一张卡片占两列，左右排：前五个实验排成 2 + 3，最后的白板单独占满一行 */
 .card.wide {
   grid-column: span 2;
   flex-direction: row;
@@ -293,6 +311,9 @@ const cells = Array.from({ length: 40 }, (_, i) =>
 }
 .card.wide h2 {
   font-size: 1.5rem;
+}
+.card.full {
+  grid-column: 1 / -1;
 }
 .card.wide .city-svg {
   max-width: 400px;
@@ -610,6 +631,47 @@ const cells = Array.from({ length: 40 }, (_, i) =>
     height: 140px;
   }
 }
+.board-svg {
+  width: 88%;
+  max-width: 320px;
+  height: 140px;
+  overflow: visible;
+}
+.board-svg path,
+.board-svg rect,
+.board-svg circle {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.board-svg .hl {
+  stroke: #fcc419;
+  stroke-width: 14;
+  opacity: 0.45;
+  stroke-dasharray: 120;
+  animation: trace 1s var(--ease-out) backwards;
+}
+.board-svg .ink {
+  stroke: var(--ac);
+  stroke-width: 4;
+  stroke-dasharray: 160;
+  animation: trace 1.4s var(--ease-out) 0.2s backwards;
+}
+.board-svg .i2 {
+  animation-delay: 0.6s;
+}
+.board-svg .box {
+  stroke: #7048e8;
+  stroke-width: 2.5;
+  stroke-dasharray: 6 5;
+}
+.board-svg .eraser {
+  stroke: var(--vp-c-text-3);
+  stroke-width: 1.5;
+}
+.card:hover .board-svg .ink {
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--ac) 60%, transparent));
+}
 .ecg-svg {
   width: 82%;
   max-width: 280px;
@@ -648,6 +710,7 @@ const cells = Array.from({ length: 40 }, (_, i) =>
 
 @media (prefers-reduced-motion: reduce) {
   .bld,
+  .board-svg path,
   .toks span,
   .cells span,
   .card:hover .st,

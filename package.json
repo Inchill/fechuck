@@ -30,7 +30,10 @@
     "node": ">=24"
   },
   "dependencies": {
+    "@inchill/react-whiteboard": "^1.0.0",
     "js-tiktoken": "^1.0.21",
-    "photoswipe": "^5.4.4"
+    "photoswipe": "^5.4.4",
+    "react": "^19",
+    "react-dom": "^19"
   }
 }

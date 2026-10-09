@@ -1120,6 +1120,7 @@ html.route-enter .VPDoc .aside {
 .tokens-page .VPLocalNav,
 .stars-page .VPLocalNav,
 .vitals-page .VPLocalNav,
+.board-page .VPLocalNav,
 .context-page .VPLocalNav,
 .lab-page .VPLocalNav {
   display: none;

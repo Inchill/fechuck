@@ -85,7 +85,8 @@ const LAB: Item[] = [
   { kind: 'lab', title: '文章星图', keys: 'stars 星图 相似 星空', run: () => go('/lab/stars.html') },
   { kind: 'lab', title: 'Token 显微镜', keys: 'tokens tokenizer 分词', run: () => go('/lab/tokens.html') },
   { kind: 'lab', title: 'Web Vitals 心电图', keys: 'vitals lcp cls inp 性能 performance', run: () => go('/lab/vitals.html') },
-  { kind: 'lab', title: '上下文窗口模拟器', keys: 'context skills 上下文 缓存', run: () => go('/lab/context.html') }
+  { kind: 'lab', title: '上下文窗口模拟器', keys: 'context skills 上下文 缓存', run: () => go('/lab/context.html') },
+  { kind: 'lab', title: '涂鸦白板', keys: 'board whiteboard draw 画板 白板 涂鸦', run: () => go('/lab/board.html') }
 ]
 const POSTS: Item[] = posts.map((p) => ({ kind: 'post', title: p.title, sub: p.date, keys: `${p.excerpt} ${(p.tags ?? []).join(' ')}`, run: () => go(p.url) }))
 const NOTES: Item[] = notes.map((n) => ({ kind: 'note', title: n.title, sub: n.date, keys: `${n.excerpt ?? ''} ${(n.tags ?? []).join(' ')}`, run: () => go(n.url) }))

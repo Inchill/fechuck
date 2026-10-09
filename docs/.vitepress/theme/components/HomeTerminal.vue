@@ -63,7 +63,7 @@ function print(...ls: Line[]) {
   })
 }
 
-const COMMANDS = ['help', 'whoami', 'ls', 'cat', 'open', 'grep', 'random', 'theme', 'posts', 'notes', 'bookmarks', 'surf', 'music', 'city', 'tokens', 'stars', 'vitals', 'about', 'github', 'clear']
+const COMMANDS = ['help', 'whoami', 'ls', 'cat', 'open', 'grep', 'random', 'theme', 'posts', 'notes', 'bookmarks', 'surf', 'music', 'city', 'tokens', 'stars', 'vitals', 'board', 'about', 'github', 'clear']
 
 const HELP: Line[] = [
   { kind: 'out', text: '可用命令：' },
@@ -82,6 +82,7 @@ const HELP: Line[] = [
   { kind: 'out', text: '  tokens      Token 显微镜：看文字被切成哪些 token' },
   { kind: 'out', text: '  stars       文章星图：按内容远近排成一片星空' },
   { kind: 'out', text: '  vitals      Web Vitals 心电图：实时看这个页面的性能' },
+  { kind: 'out', text: '  board       涂鸦白板：随手画点什么' },
   { kind: 'out', text: '  music       放 / 停音乐（music rock 切风格，输 music ? 看全部）' },
   { kind: 'out', text: '  about       关于我' },
   { kind: 'out', text: '  github      去 GitHub' },
@@ -174,6 +175,9 @@ function run(raw: string) {
       break
     case 'vitals':
       router.go('/lab/vitals.html')
+      break
+    case 'board':
+      router.go('/lab/board.html')
       break
     case 'surf': {
       const sites = bookmarks.groups.flatMap((g) => g.sites)
