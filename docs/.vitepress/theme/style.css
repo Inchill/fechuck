@@ -301,6 +301,12 @@ html.theme-switching *::after {
     font-weight: 400;
 }
 
+/* 默认主题给 h2 的锚点加了 top: 24px，用来抵消 h2 自带的 padding-top；
+   上面把 h2 的 padding-top 去掉了，锚点也要回到顶部，否则 # 会比标题低一截 */
+.vp-doc h2 .header-anchor {
+    top: 0;
+}
+
 /* ---- 正文 ---- */
 .vp-doc p,
 .vp-doc li {
