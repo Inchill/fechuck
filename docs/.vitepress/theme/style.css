@@ -399,6 +399,26 @@ html.theme-switching *::after {
     color: var(--vp-c-text-3);
 }
 
+/* 代码组（::: code-group）：标签栏和下面的代码块要拼成一个整体。
+   默认主题的标签栏是 8px 圆角、没有描边，而上面给代码块加了 14px 圆角和描边，两段接不上 */
+.vp-doc .vp-code-group {
+    margin: 24px 0;
+}
+.vp-doc .vp-code-group .tabs {
+    border-top: 1px solid var(--border-soft);
+}
+@media (min-width: 640px) {
+    .vp-doc .vp-code-group .tabs {
+        border: 1px solid var(--border-soft);
+        border-bottom: none;
+        border-radius: 14px 14px 0 0;
+    }
+}
+.vp-doc .vp-code-group div[class*='language-'] {
+    margin-bottom: 0;
+    border-top: none;
+}
+
 /* ---- 图片：圆角 + 一圈发丝描边，独占一段时居中留白 ---- */
 .vp-doc img {
     border-radius: 12px;
@@ -453,6 +473,8 @@ html.theme-switching *::after {
     content: '· · ·';
     font-size: 18px;
     letter-spacing: 0.6em;
+    /* letter-spacing 会在最后一个点后面也留一段空白，左边补同样的距离才能真正居中 */
+    padding-left: 0.6em;
     color: var(--vp-c-text-3);
 }
 
@@ -673,7 +695,10 @@ html.route-enter .VPDoc .aside {
     .vp-doc h2 {
         margin-top: 56px;
     }
+    /* 手机上代码块贴满屏幕宽度（和默认主题一样左右各伸出 24px），所以去掉左右描边和圆角。
+       上面统一设置的 margin: 24px 0 会把默认的 -24px 覆盖掉，这里要补回来 */
     .vp-doc div[class*='language-'] {
+        margin: 24px -24px;
         border-radius: 0;
         border-left: none;
         border-right: none;
