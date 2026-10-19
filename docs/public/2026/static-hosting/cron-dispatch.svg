@@ -11,7 +11,7 @@
   <rect width="960" height="560" fill="#fafaf8"/>
 
   <text x="40" y="44" font-size="22" font-weight="600" fill="#111827">用 Worker Cron 触发 GitHub Actions</text>
-  <text x="40" y="70" font-size="13" fill="#6b7280">调度交给 Cloudflare，执行留在 GitHub</text>
+  <text x="40" y="70" font-size="13" fill="#6b7280">Cloudflare 负责定时，GitHub Actions 负责执行</text>
 
   <!-- 参与者 -->
   <g font-size="15" font-weight="600" text-anchor="middle">

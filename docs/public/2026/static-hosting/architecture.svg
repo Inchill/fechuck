@@ -10,7 +10,7 @@
 
   <rect width="960" height="600" fill="#fafaf8"/>
 
-  <text x="40" y="44" font-size="22" font-weight="600" fill="#111827">托管平台怎么串起来</text>
+  <text x="40" y="44" font-size="22" font-weight="600" fill="#111827">几个平台之间的关系</text>
   <text x="40" y="70" font-size="13" fill="#6b7280">实线：网站访问路径　　虚线：定时任务路径</text>
 
   <!-- 代码仓库 -->
