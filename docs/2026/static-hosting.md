@@ -1,82 +1,78 @@
 ---
 date: 2026-10-19
 outline: deep
-description: 这两天部署用到了 GitHub Pages、Cloudflare Pages、Workers 和 DNS 解析，记录各平台的经验、免费额度、踩过的坑，以及它们之间的对比。
+description: 博客在 GitHub Pages，新项目因为是私有仓库放到了 Cloudflare Pages，定时任务又用上了 Workers。记录这几个平台的免费额度、限制和踩过的坑。
 ---
 
-# GitHub Pages、Cloudflare Pages 与 Workers：一次部署下来的经验与对比
+# GitHub Pages、Cloudflare Pages 和 Workers 怎么选
 
-这两天把几个小项目都部署上线，一口气用到了 GitHub Pages、Cloudflare Pages、Cloudflare Workers，外加域名解析。每个单独看都不难，但放在一起用，才真正搞清楚它们各自擅长什么、边界在哪。记录一下。
+这个博客一直部署在 GitHub Pages 上，推代码就更新，没操过什么心。
 
-## 一句话定位
+最近做了个新项目，仓库是私有的，而 GitHub Pages 免费账号只支持公开仓库，于是把它放到了 Cloudflare Pages。项目里有个每天要跑的任务，一开始用 GitHub Actions 自带的 `schedule`，结果漏跑了一次，后来改成用 Cloudflare Workers 的定时器去触发。域名解析一直在阿里云，两个平台都要接过去。
 
-- **GitHub Pages**：代码在哪，站点就在哪。适合公开仓库的静态站、文档、博客，零配置。
-- **Cloudflare Pages**：更强的静态托管，私有仓库、预览部署、自定义域名都更灵活。
-- **Cloudflare Workers**：跑在边缘的小段代码。能做 API、重定向、定时任务，现在也能直接托管静态资源。
-- **DNS**：把上面这些串到自己域名上的那根线。
+前后折腾了两天，把这几样东西的区别和坑记一下。整体关系大概是这样：
 
-![托管平台怎么串起来](/2026/static-hosting/architecture.svg){data-zoomable}
+![几个平台之间的关系](/2026/static-hosting/architecture.svg){data-zoomable}
 
-## GitHub Pages：最省心，但限制也最"GitHub"
+## GitHub Pages
 
-优点很直接：推代码就上线，不用注册任何其他平台。
+适合公开仓库的静态站，比如博客、文档、项目主页。代码和站点在一个地方，不用再注册别的平台。
 
-需要注意的几点：
+几个限制：
 
-- **私有仓库要付费**。免费账户只能用公开仓库开 Pages，GitHub Pro、Team 等付费方案才支持私有仓库。项目不想开源的话，这一条基本就把它排除了。
-- **用量是软限制**：发布后的站点不超过 1 GB，每月带宽软上限 100 GB，每小时约 10 次构建（用自定义 Actions 工作流发布则不受这条限制），单次部署超过 10 分钟会超时。
-- 每个账号只能有一个 `用户名.github.io` 的用户站点，其余都是项目站点（`用户名.github.io/仓库名`），用自定义域名可以绕开路径问题。
+- 免费账号只能用公开仓库，私有仓库要 GitHub Pro、Team 等付费方案。
+- 发布后的站点最大 1 GB，带宽每月 100 GB，每小时大约 10 次构建，单次部署超过 10 分钟会超时。都是软限制，个人博客基本碰不到。用自定义 Actions 工作流发布的话，不受每小时构建次数的限制。
+- 每个账号只有一个 `用户名.github.io` 用户站点，其他仓库都是 `用户名.github.io/仓库名` 这种带路径的项目站点。绑上自定义域名就没有路径的问题了。
 
-## Cloudflare Pages：私有仓库友好的升级版
+## Cloudflare Pages
 
-从 GitHub 拉代码、自动构建、全球 CDN 分发，体验和 GitHub Pages 类似，但：
+用法和 GitHub Pages 差不多：关联 GitHub 仓库，推代码自动构建、部署。区别主要在这几点：
 
-- **私有仓库免费可用**，这是我选它的主要原因。
-- 每个分支、每个 PR 都有独立的预览地址，改东西前先看效果很方便。
-- 免费额度：每月 500 次构建、同时只能跑 1 个构建，单次构建 20 分钟超时；站点最多 2 万个文件，单文件不超过 25 MiB。静态请求和带宽不限。
-- 注意 500 次构建是**整个账号共享**的，不是每个项目各 500 次，项目多、推送频繁时要留意。
+- 私有仓库也能免费用。
+- 每个分支、每个 PR 都会生成一个预览地址，合并前能先看效果。
+- 免费版每月 500 次构建，同时只能跑 1 个，单次构建 20 分钟超时；站点最多 2 万个文件，单文件不超过 25 MiB。静态请求和带宽不限。
 
-一个值得知道的趋势：Cloudflare 现在推荐新项目直接用 **Workers + 静态资源** 而不是 Pages。Pages 不会下线，已有项目照常跑，但新功能主要往 Workers 上加。迁移基本就是把 `wrangler pages deploy` 换成 `wrangler deploy`，再在配置里加一个 `assets` 目录。下一个新项目我会直接试试 Workers。
+要注意的是，500 次构建是整个账号共享的，不是每个项目 500 次。项目多、推得勤的话要留意一下。
 
-## Cloudflare Workers：拿来当"靠谱的定时器"
+另外，Cloudflare 现在推荐新项目直接用 Workers 托管静态资源，而不是 Pages。Pages 不会下线，已有项目照常用，只是新功能主要加在 Workers 上。迁移也不复杂：把 `wrangler pages deploy` 换成 `wrangler deploy`，配置里加一个 `assets` 目录就行。
 
-这次 Workers 对我最大的价值不是写 API，而是**定时任务**。
+## Workers：替 GitHub Actions 定时
 
-起因是 GitHub Actions 的 `schedule`。GitHub 官方文档就写明了：定时事件在高负载时会延迟，整点前后是高峰，负载足够高时排队中的任务甚至会被直接丢弃。我就遇到了定时任务漏跑一次的情况。
+Workers 本来是在 Cloudflare 边缘节点上跑代码的，能写接口、做重定向。我这次只用了它的定时功能（Cron Trigger）。
 
-解决办法：
+起因是 GitHub Actions 的 `schedule` 不准。GitHub 的文档里写得很清楚：Actions 负载高的时候定时任务会延迟，整点前后是高峰；负载再高一点，排队中的任务可能直接被丢掉。我就碰上了一次漏跑。
 
-1. 在 GitHub Actions 工作流里保留 `workflow_dispatch` 触发器；
-2. 写一个 Worker，用 Cron Trigger 定时执行；
-3. Worker 里用 GitHub Token 调 `POST /repos/{owner}/{repo}/actions/workflows/{workflow}/dispatches` 手动触发工作流。
+改法是让 Worker 按时调用 GitHub API，手动触发工作流：
 
-这样调度交给 Cloudflare，真正干活的还是 GitHub Actions，两边各做擅长的事。
+1. 工作流里加上 `workflow_dispatch` 触发器；
+2. 写一个 Worker，配置 Cron Trigger；
+3. Worker 到点调用 `POST /repos/{owner}/{repo}/actions/workflows/{workflow}/dispatches`。
+
+定时交给 Cloudflare，任务本身还是在 GitHub Actions 里跑，原来的工作流不用改。
 
 ![用 Worker Cron 触发 GitHub Actions](/2026/static-hosting/cron-dispatch.svg){data-zoomable}
 
-### 给 Worker 配 GitHub Token
+### 准备 GitHub Token
 
-Worker 要调 GitHub API，就得带一个有权限的 Token。
+调这个接口需要一个有权限的 Token。
 
-**1. 创建 Token**
+在 GitHub 的 Settings → Developer settings → Personal access tokens → Fine-grained tokens 里新建：
 
-在 GitHub 的 Settings → Developer settings → Personal access tokens → **Fine-grained tokens** 里新建：
+- Repository access 只选要触发的那个仓库；
+- 权限只开 Actions 的 Read and write，触发工作流需要写权限；
+- 设一个过期时间，记下来，过期了定时任务会默默失败。
 
-- Repository access 只勾选需要触发的那个仓库，不要给全部仓库；
-- 权限只开 **Actions：Read and write**（触发工作流需要写权限），其余保持默认；
-- 设一个过期时间，并记下来，到期前要换新的，不然定时任务会悄悄失败。
+不建议用 classic token，它得勾 `repo` 或 `workflow` 这种范围很大的权限，泄露了麻烦。
 
-比起老式的 classic token（要勾 `repo` 或 `workflow` 这种大权限），fine-grained token 的权限小得多，泄露了影响也有限。
-
-**2. 存成 Worker 的 Secret**
+### 把 Token 存成 Secret
 
 ```bash
 npx wrangler secret put GITHUB_TOKEN
 ```
 
-回车后粘贴 Token。也可以在 Cloudflare 控制台的 Worker → Settings → Variables and Secrets 里添加，类型选 Secret。Secret 加密存储，部署后在代码里通过 `env.GITHUB_TOKEN` 读取，不会出现在代码和仓库里。
+回车后粘贴 Token。也可以在 Cloudflare 控制台的 Worker → Settings → Variables and Secrets 里加，类型选 Secret。代码里用 `env.GITHUB_TOKEN` 读取，Token 不会出现在代码和仓库里。
 
-**3. Worker 代码**
+### Worker 代码
 
 ```js
 export default {
@@ -88,7 +84,7 @@ export default {
         Authorization: `Bearer ${env.GITHUB_TOKEN}`,
         Accept: "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "cron-dispatcher", // GitHub API 必须带，不带会 403
+        "User-Agent": "cron-dispatcher", // GitHub API 要求必须带，不带会 403
       },
       body: JSON.stringify({ ref: "main" }),
     });
@@ -99,57 +95,59 @@ export default {
 };
 ```
 
-`wrangler.jsonc` 里配置定时和普通变量：
+`wrangler.jsonc`：
 
 ```jsonc
 {
   "name": "cron-dispatcher",
   "main": "src/index.js",
   "compatibility_date": "2026-10-19",
-  "triggers": { "crons": ["0 1 * * 1-5"] }, // UTC 01:00 = 北京时间 09:00，工作日
+  "triggers": { "crons": ["0 1 * * 1-5"] }, // UTC 01:00，也就是北京时间工作日 09:00
   "vars": { "OWNER": "你的用户名", "REPO": "仓库名", "WORKFLOW": "daily.yml" }
 }
 ```
 
-成功时 GitHub 返回 `204 No Content`，几秒后就能在 Actions 页面看到一条 `workflow_dispatch` 触发的运行。本地调试可以用 `npx wrangler dev --test-scheduled`，再访问 `/__scheduled` 手动触发一次。
+调用成功时 GitHub 返回 `204 No Content`，过几秒 Actions 页面就会出现一条 `workflow_dispatch` 触发的运行。本地调试可以 `npx wrangler dev --test-scheduled`，然后访问 `/__scheduled` 手动触发一次。
 
-几个坑：
+### 踩过的坑
 
-- **Cron Trigger 只认 UTC**，北京时间要减 8 小时。
-- 免费版整个账号只有 **5 个** Cron Trigger，不是每个 Worker 5 个。
-- 免费版每次执行只有 10 ms CPU 时间。发一个 HTTP 请求等待响应不算 CPU 时间，触发工作流绰绰有余；但别在 Worker 里做重计算。
-- 免费版每天 10 万次请求、单次执行最多 50 个子请求，个人项目基本碰不到。
-- 遇到 403，先检查有没有带 `User-Agent` 请求头，再检查 Token 权限和所选仓库；遇到 404，多半是 owner、仓库名或工作流文件名写错了，或者 Token 没有访问这个仓库的权限。
-- 工作流里必须声明 `on: workflow_dispatch`，否则接口会返回 422。
+- Cron Trigger 按 UTC 计时，北京时间要减 8 小时。
+- 免费版一个账号总共只有 5 个 Cron Trigger，不是每个 Worker 5 个。
+- 免费版每次执行只有 10 ms CPU 时间。等网络响应不算 CPU 时间，发个请求够用，但别在 Worker 里做计算。
+- 免费版每天 10 万次请求、单次执行最多 50 个子请求，这个场景用不完。
+- 返回 403：先看有没有带 `User-Agent`，再看 Token 的权限和仓库范围。返回 404：多半是用户名、仓库名或工作流文件名写错了，或者 Token 没授权这个仓库。
+- 返回 422：工作流里没有声明 `on: workflow_dispatch`。
 
-## DNS：域名在阿里云，站点在 Cloudflare 也没问题
+## 域名解析
 
-我的域名解析在阿里云，并没有把 nameserver 迁到 Cloudflare。实际体验：
+域名在阿里云，没有把 nameserver 迁到 Cloudflare，子域名两边都能接：
 
-- **子域名接 Cloudflare Pages**：先在 Pages 项目里添加自定义域名，再去阿里云加一条 CNAME，指向 `项目名.pages.dev`，等验证通过、证书自动签发就好了。
-- **子域名接 GitHub Pages**：CNAME 指向 `用户名.github.io`，并在仓库 Settings → Pages 里填上域名、勾选 Enforce HTTPS。
-- **根域名（apex）**：GitHub Pages 用 A 记录指向它的几个 IP 即可；而 Cloudflare Pages 的根域名需要把域名的 DNS 托管到 Cloudflare。所以如果根域名想放 Cloudflare，就得考虑迁 nameserver。
-- Worker 的定时任务完全不需要域名，用默认的 `workers.dev` 甚至不用暴露任何地址。
-- 改完解析别急，生效需要时间；先用 `dig 子域名 CNAME` 确认记录对了，再排查平台侧的问题。
+- **接 Cloudflare Pages**：先在 Pages 项目里添加自定义域名，再去阿里云加一条 CNAME，指向 `项目名.pages.dev`。验证通过后证书会自动签发。
+- **接 GitHub Pages**：CNAME 指向 `用户名.github.io`，然后在仓库 Settings → Pages 里填上域名，勾选 Enforce HTTPS。
 
-## 横向对比
+根域名不一样。GitHub Pages 用 A 记录指向它给的几个 IP 就行；Cloudflare Pages 的根域名则要求域名的 DNS 托管在 Cloudflare。所以根域名想放 Cloudflare，就得迁 nameserver。
+
+Worker 只做定时任务的话不需要绑域名，默认的 `workers.dev` 地址都用不上。
+
+改完解析如果没生效，先用 `dig 子域名 CNAME` 确认记录本身对不对，再去查平台那边。
+
+## 对比
 
 | | GitHub Pages | Cloudflare Pages | Cloudflare Workers |
 |---|---|---|---|
-| 定位 | 静态站托管 | 静态站 / 轻全栈托管 | 边缘代码 + 静态资源 |
-| 私有仓库（免费） | ❌ | ✅ | ✅ |
-| 构建限制 | 约 10 次/小时（软） | 500 次/月，账号共享 | 无构建概念，按请求计 |
-| 带宽 | 100 GB/月（软） | 静态请求不限 | 静态资源请求不限 |
-| 预览部署 | 需自己搭 | 每个分支自动 | 支持版本预览 |
-| 定时任务 | Actions schedule，不保证准时 | ❌ | Cron Trigger，账号共 5 个（免费） |
-| 根域名接入 | A 记录即可 | 需 DNS 托管到 Cloudflare | 自定义域名需 DNS 在 Cloudflare |
-| 上手成本 | 最低 | 低 | 中，需要写点代码 |
+| 主要用途 | 静态站 | 静态站、轻量全栈 | 边缘代码、静态资源 |
+| 免费用私有仓库 | 不支持 | 支持 | 支持 |
+| 构建限制 | 约 10 次/小时（软限制） | 500 次/月，账号共享 | 不需要构建 |
+| 带宽 | 100 GB/月（软限制） | 不限 | 静态资源请求不限 |
+| 预览部署 | 没有 | 每个分支自动生成 | 有版本预览 |
+| 定时任务 | Actions schedule，不保证准时 | 没有 | Cron Trigger，免费版账号共 5 个 |
+| 根域名 | A 记录即可 | DNS 需托管在 Cloudflare | 自定义域名需 DNS 在 Cloudflare |
 
-## 我的选择
+## 怎么选
 
-- 公开的、纯展示的静态站：**GitHub Pages**，省一个平台。
-- 私有仓库、想要预览部署：**Cloudflare Pages**（新项目考虑直接用 Workers 静态资源）。
-- 需要准时跑的定时任务：**Workers Cron 触发 GitHub Actions**，别把关键任务押在 Actions 自带的 schedule 上。
-- DNS 放哪都行，但想用 Cloudflare 的全套能力（根域名、Workers 自定义域名），早晚得把解析迁过去。
+- 公开仓库的静态站，用 GitHub Pages 就够了，少一个平台要管。
+- 私有仓库，或者想要分支预览，用 Cloudflare Pages；新建的项目可以直接上 Workers 静态资源。
+- 要按时执行的任务，不要只靠 Actions 的 `schedule`，用 Worker 定时触发更稳。
+- DNS 放阿里云也能用，但要用根域名接 Cloudflare，或者给 Worker 绑自定义域名，就得把解析迁到 Cloudflare。
 
-都是免费额度，对个人项目来说完全够用。真正花时间的不是部署本身，而是弄清楚每个平台的边界。
+这些都在免费额度内，个人项目够用。
