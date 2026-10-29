@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 304" width="760" height="304" role="img" aria-label="多种来源汇成一份 trajectory.json，供四类场景使用" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Noto Sans CJK TC','Microsoft YaHei',sans-serif" font-size="13">
+    <defs>
+    <marker id="atif-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path fill="#6b7280" d="M0 0L10 5L0 10z"/>
+    </marker>
+  </defs>
+
+  <rect width="760" height="304" fill="#fafaf8"/>
+
+  <text fill="#111827" x="24" y="32" font-size="15" font-weight="600">多种来源汇成一份 trajectory.json，供四类场景使用</text>
+  <text fill="#6b7280" x="120" y="62" text-anchor="middle" font-size="11.5">生产方</text>
+  <text fill="#6b7280" x="640" y="62" text-anchor="middle" font-size="11.5">消费方</text>
+
+  <g stroke="#6b7280" fill="none" stroke-width="1.25">
+    <path d="M216 106H256V176"/>
+    <path d="M216 246H256V176"/>
+    <path d="M216 176H296" marker-end="url(#atif-arrow)"/>
+    <path d="M464 176H504"/>
+    <path d="M504 98V266"/>
+    <path d="M504 98H544" marker-end="url(#atif-arrow)"/>
+    <path d="M504 154H544" marker-end="url(#atif-arrow)"/>
+    <path d="M504 210H544" marker-end="url(#atif-arrow)"/>
+    <path d="M504 266H544" marker-end="url(#atif-arrow)"/>
+  </g>
+
+  <rect stroke="#6b7280" x="24" y="80" width="192" height="52" rx="8" fill="#ffffff" stroke-width="1.25"/>
+  <text fill="#111827" x="120" y="102" text-anchor="middle" font-weight="600">Agent 直接写出</text>
+  <text fill="#6b7280" x="120" y="120" text-anchor="middle" font-size="11.5">Harbor Terminus 2 等</text>
+
+  <rect stroke="#6b7280" x="24" y="150" width="192" height="52" rx="8" fill="#ffffff" stroke-width="1.25"/>
+  <text fill="#111827" x="120" y="172" text-anchor="middle" font-weight="600">原生日志转换</text>
+  <text fill="#6b7280" x="120" y="190" text-anchor="middle" font-size="11.5">OpenHands、Claude Code</text>
+
+  <rect stroke="#6b7280" x="24" y="220" width="192" height="52" rx="8" fill="#ffffff" stroke-width="1.25"/>
+  <text fill="#111827" x="120" y="242" text-anchor="middle" font-weight="600">运行时插件导出</text>
+  <text fill="#6b7280" x="120" y="260" text-anchor="middle" font-size="11.5">NeMo Relay</text>
+
+  <rect fill="#dbeafe" stroke="#2563eb" x="296" y="140" width="168" height="72" rx="8" stroke-width="2"/>
+  <text fill="#111827" x="380" y="172" text-anchor="middle" font-weight="600">trajectory.json</text>
+  <text fill="#6b7280" x="380" y="192" text-anchor="middle" font-size="11.5">ATIF 格式 + 校验器</text>
+
+  <rect stroke="#6b7280" x="544" y="78" width="192" height="40" rx="8" fill="#ffffff" stroke-width="1.25"/>
+  <text fill="#111827" x="640" y="102" text-anchor="middle">调试与回放</text>
+  <rect stroke="#6b7280" x="544" y="134" width="192" height="40" rx="8" fill="#ffffff" stroke-width="1.25"/>
+  <text fill="#111827" x="640" y="158" text-anchor="middle">成本与性能分析</text>
+  <rect stroke="#6b7280" x="544" y="190" width="192" height="40" rx="8" fill="#ffffff" stroke-width="1.25"/>
+  <text fill="#111827" x="640" y="214" text-anchor="middle">评测打分</text>
+  <rect stroke="#6b7280" x="544" y="246" width="192" height="40" rx="8" fill="#ffffff" stroke-width="1.25"/>
+  <text fill="#111827" x="640" y="270" text-anchor="middle">SFT / RL 训练数据</text>
+</svg>
