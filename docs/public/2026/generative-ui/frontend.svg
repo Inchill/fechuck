@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" width="760" height="340" role="img" aria-label="前端处理流水线：fetch 读流、解析 SSE、合批、reducer 生成块数组、注册表按类型找组件，每个块独立容错" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Noto Sans CJK TC','Microsoft YaHei',sans-serif" font-size="12.5">
+  <defs>
+    <marker id="fe-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path fill="#4b5563" d="M0 0L10 5L0 10z"/>
+    </marker>
+  </defs>
+  <rect width="760" height="340" fill="#fafaf8"/>
+  <text fill="#111827" x="24" y="32" font-size="15" font-weight="600">前端的处理流水线</text>
+
+  <!-- 第一行 -->
+  <g fill="#ffffff" stroke="#6b7280" stroke-width="1.25">
+    <rect x="24" y="60" width="124" height="52" rx="8"/>
+    <rect x="168" y="60" width="108" height="52" rx="8"/>
+    <rect x="296" y="60" width="116" height="52" rx="8"/>
+    <rect x="432" y="60" width="108" height="52" rx="8"/>
+  </g>
+  <rect x="560" y="60" width="176" height="52" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <g text-anchor="middle" font-weight="600" fill="#111827">
+    <text x="86" y="82">fetch 读流</text>
+    <text x="222" y="82">SSE 解析</text>
+    <text x="354" y="82">合批</text>
+    <text x="486" y="82">reducer</text>
+    <text x="648" y="82" fill="#1e3a8a">message.blocks</text>
+  </g>
+  <g text-anchor="middle" font-size="11" fill="#6b7280">
+    <text x="86" y="100">ReadableStream</text>
+    <text x="222" y="100">按空行切事件</text>
+    <text x="354" y="100">rAF 合并更新</text>
+    <text x="486" y="100">按 blockId 合并</text>
+    <text x="648" y="100" fill="#1e3a8a">落库、回放都用它</text>
+  </g>
+  <g stroke="#4b5563" stroke-width="1.25" fill="none" marker-end="url(#fe-arrow)">
+    <path d="M148 86H164"/>
+    <path d="M276 86H292"/>
+    <path d="M412 86H428"/>
+    <path d="M540 86H556"/>
+  </g>
+  <text fill="#6b7280" x="24" y="132" font-size="11">请求头带上 X-Blocks：声明本端支持的块类型和版本</text>
+
+  <!-- registry -->
+  <path d="M648 112V144" stroke="#4b5563" stroke-width="1.25" fill="none" marker-end="url(#fe-arrow)"/>
+  <rect x="560" y="148" width="176" height="40" rx="8" fill="#ffffff" stroke="#111827" stroke-width="1.5"/>
+  <text fill="#111827" x="648" y="173" text-anchor="middle" font-weight="600" font-family="'SF Mono','JetBrains Mono',Menlo,Consolas,monospace">registry[type]</text>
+
+  <!-- 总线 -->
+  <path d="M648 188V204M92 204H684" stroke="#4b5563" stroke-width="1.25" fill="none"/>
+  <g stroke="#4b5563" stroke-width="1.25" fill="none" marker-end="url(#fe-arrow)">
+    <path d="M92 204V230"/>
+    <path d="M240 204V230"/>
+    <path d="M388 204V230"/>
+    <path d="M536 204V230"/>
+    <path d="M684 204V230"/>
+  </g>
+
+  <!-- ErrorBoundary 区域 -->
+  <rect x="16" y="220" width="728" height="84" rx="10" fill="none" stroke="#d97706" stroke-dasharray="5 4" stroke-width="1.25"/>
+  <g fill="#ffffff" stroke="#9ca3af" stroke-width="1.25">
+    <rect x="28" y="234" width="128" height="56" rx="8"/>
+    <rect x="176" y="234" width="128" height="56" rx="8"/>
+    <rect x="324" y="234" width="128" height="56" rx="8"/>
+    <rect x="472" y="234" width="128" height="56" rx="8"/>
+    <rect x="620" y="234" width="128" height="56" rx="8" stroke-dasharray="4 3"/>
+  </g>
+  <g text-anchor="middle" font-weight="600" fill="#111827">
+    <text x="92" y="258">TextBlock</text>
+    <text x="240" y="258">ChartBlock</text>
+    <text x="388" y="258">FileBlock</text>
+    <text x="536" y="258">FormBlock</text>
+    <text x="684" y="258">UnknownBlock</text>
+  </g>
+  <g text-anchor="middle" font-size="11" fill="#6b7280">
+    <text x="92" y="278">流式 Markdown</text>
+    <text x="240" y="278">懒加载 ECharts</text>
+    <text x="388" y="278">懒加载 pdf.js</text>
+    <text x="536" y="278">提交走 actions</text>
+    <text x="684" y="278">显示 fallback</text>
+  </g>
+  <text fill="#b45309" x="24" y="326" font-size="11.5">每个块各自包一层 ErrorBoundary、各自 memo：一个块出错或更新，不影响整条消息</text>
+</svg>

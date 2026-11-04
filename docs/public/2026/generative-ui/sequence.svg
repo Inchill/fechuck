@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 548" width="760" height="548" role="img" aria-label="一轮对话中前端、编排服务、模型和业务接口之间的时序：模型发起工具调用，编排服务取数后下发图表块，再把数据摘要交回模型继续生成" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Noto Sans CJK TC','Microsoft YaHei',sans-serif" font-size="12">
+  <defs>
+    <marker id="seq-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path fill="#4b5563" d="M0 0L10 5L0 10z"/>
+    </marker>
+    <marker id="seq-arrow-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path fill="#2563eb" d="M0 0L10 5L0 10z"/>
+    </marker>
+  </defs>
+  <rect width="760" height="548" fill="#fafaf8"/>
+  <text fill="#111827" x="24" y="32" font-size="15" font-weight="600">一轮对话的完整时序</text>
+
+  <!-- 工具调用区域 -->
+  <rect x="150" y="228" width="586" height="192" rx="6" fill="#eff6ff"/>
+  <text fill="#2563eb" x="284" y="318" font-size="11" text-anchor="end">拦截 tool_call</text>
+  <text fill="#2563eb" x="284" y="334" font-size="11" text-anchor="end">自己去取数</text>
+
+  <!-- 参与方 -->
+  <g font-size="13" font-weight="600" text-anchor="middle">
+    <rect x="46" y="52" width="100" height="32" rx="6" fill="#ffffff" stroke="#6b7280" stroke-width="1.25"/>
+    <text fill="#111827" x="96" y="73">前端</text>
+    <rect x="236" y="52" width="120" height="32" rx="6" fill="#ffffff" stroke="#6b7280" stroke-width="1.25"/>
+    <text fill="#111827" x="296" y="73">编排服务</text>
+    <rect x="438" y="52" width="100" height="32" rx="6" fill="#ffffff" stroke="#6b7280" stroke-width="1.25"/>
+    <text fill="#111827" x="488" y="73">模型</text>
+    <rect x="622" y="52" width="100" height="32" rx="6" fill="#ffffff" stroke="#6b7280" stroke-width="1.25"/>
+    <text fill="#111827" x="672" y="73">业务接口</text>
+  </g>
+  <g stroke="#9ca3af" stroke-dasharray="4 4">
+    <line x1="96" y1="84" x2="96" y2="512"/>
+    <line x1="296" y1="84" x2="296" y2="512"/>
+    <line x1="488" y1="84" x2="488" y2="512"/>
+    <line x1="672" y1="84" x2="672" y2="512"/>
+  </g>
+
+  <!-- 消息 -->
+  <g stroke="#4b5563" stroke-width="1.25" fill="none" marker-end="url(#seq-arrow)">
+    <path d="M96 116H292"/>
+    <path d="M296 148H484"/>
+    <path d="M488 180H300"/>
+    <path d="M488 244H300"/>
+    <path d="M296 308H668"/>
+    <path d="M672 340H300"/>
+    <path d="M296 404H484"/>
+    <path d="M488 436H300"/>
+  </g>
+  <g stroke="#2563eb" stroke-width="1.5" fill="none" marker-end="url(#seq-arrow-b)">
+    <path d="M296 212H100"/>
+    <path d="M296 276H100"/>
+    <path d="M296 372H100"/>
+    <path d="M296 468H100"/>
+    <path d="M296 500H100"/>
+  </g>
+  <g fill="#111827" text-anchor="middle">
+    <text x="196" y="110">POST /chat 用户问题</text>
+    <text x="392" y="142">messages + tools</text>
+    <text x="392" y="174">文本增量「我查一下…」</text>
+    <text x="392" y="238">tool_call show_sales_chart</text>
+    <text x="484" y="302">查询销售数据（带用户身份）</text>
+    <text x="484" y="334">真实数据</text>
+    <text x="392" y="398">tool 结果：数据摘要</text>
+    <text x="392" y="430">基于真实数据写分析</text>
+  </g>
+  <g fill="#1e3a8a" text-anchor="middle" font-family="'SF Mono','JetBrains Mono',Menlo,Consolas,monospace" font-size="11.5">
+    <text x="196" y="206">text_delta b1</text>
+    <text x="196" y="270">block_start b2 chart</text>
+    <text x="196" y="366">block_end b2 {spec}</text>
+    <text x="196" y="462">text_delta b3</text>
+    <text x="196" y="494">done</text>
+  </g>
+
+  <!-- 前端旁注 -->
+  <g fill="#6b7280" font-size="11" text-anchor="end">
+    <text x="88" y="280">骨架屏</text>
+    <text x="88" y="376">画图表</text>
+    <text x="88" y="472">接着出字</text>
+  </g>
+  <text fill="#6b7280" x="24" y="536" font-size="11">蓝色箭头是下发给前端的 SSE 事件；tool_call 本身不透传给前端</text>
+</svg>
