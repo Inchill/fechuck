@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 372" width="760" height="372" role="img" aria-label="Generative UI 的三种模式：受控型、声明式、开放式，从左到右控制力递减、表达力递增" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Noto Sans CJK TC','Microsoft YaHei',sans-serif" font-size="13">
+  <defs>
+    <linearGradient id="pat-grad" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#d97706"/>
+    </linearGradient>
+    <marker id="pat-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path fill="#d97706" d="M0 0L10 5L0 10z"/>
+    </marker>
+  </defs>
+  <rect width="760" height="372" fill="#fafaf8"/>
+  <text fill="#111827" x="24" y="32" font-size="15" font-weight="600">Generative UI 的三种模式</text>
+
+  <path d="M24 64H732" stroke="url(#pat-grad)" stroke-width="3" fill="none" marker-end="url(#pat-arrow)"/>
+  <text fill="#2563eb" x="24" y="56" font-size="11.5">控制力强 · 风格统一 · 安全</text>
+  <text fill="#d97706" x="736" y="56" font-size="11.5" text-anchor="end">表达力强 · 难统一 · 风险高</text>
+
+  <!-- 受控型 -->
+  <rect x="24" y="84" width="224" height="232" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+  <rect x="24" y="84" width="224" height="48" rx="10" fill="#dbeafe"/>
+  <rect x="24" y="120" width="224" height="12" fill="#dbeafe"/>
+  <text fill="#1e3a8a" x="40" y="106" font-weight="600" font-size="14">受控型</text>
+  <text fill="#1e3a8a" x="40" y="124" font-size="11.5">Controlled / Static</text>
+
+  <!-- 声明式 -->
+  <rect x="268" y="84" width="224" height="232" rx="10" fill="#ffffff" stroke="#7c3aed" stroke-width="1.5"/>
+  <rect x="268" y="84" width="224" height="48" rx="10" fill="#ede9fe"/>
+  <rect x="268" y="120" width="224" height="12" fill="#ede9fe"/>
+  <text fill="#4c1d95" x="284" y="106" font-weight="600" font-size="14">声明式</text>
+  <text fill="#4c1d95" x="284" y="124" font-size="11.5">Declarative</text>
+
+  <!-- 开放式 -->
+  <rect x="512" y="84" width="224" height="232" rx="10" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <rect x="512" y="84" width="224" height="48" rx="10" fill="#fef3c7"/>
+  <rect x="512" y="120" width="224" height="12" fill="#fef3c7"/>
+  <text fill="#78350f" x="528" y="106" font-weight="600" font-size="14">开放式</text>
+  <text fill="#78350f" x="528" y="124" font-size="11.5">Open-ended</text>
+
+  <g font-size="11" fill="#6b7280">
+    <text x="40" y="154">UI 由谁定义</text>
+    <text x="284" y="154">UI 由谁定义</text>
+    <text x="528" y="154">UI 由谁定义</text>
+    <text x="40" y="200">Agent 输出什么</text>
+    <text x="284" y="200">Agent 输出什么</text>
+    <text x="528" y="200">Agent 输出什么</text>
+    <text x="40" y="246">典型实现</text>
+    <text x="284" y="246">典型实现</text>
+    <text x="528" y="246">典型实现</text>
+  </g>
+  <g font-size="12.5" fill="#111827">
+    <text x="40" y="173">前端写好的一组组件</text>
+    <text x="40" y="219">选哪个组件 + 参数</text>
+    <text x="40" y="265">AI SDK tool parts</text>
+    <text x="40" y="283">CopilotKit 前端工具</text>
+    <text x="40" y="301">自研块协议</text>
+
+    <text x="284" y="173">前端的组件目录</text>
+    <text x="284" y="219">用目录组件拼出的组件树</text>
+    <text x="284" y="265">A2UI（Google）</text>
+    <text x="284" y="283">Open-JSON-UI（OpenAI）</text>
+
+    <text x="528" y="173">MCP 服务或 Agent 自己</text>
+    <text x="528" y="219">一段 HTML，在 iframe 里跑</text>
+    <text x="528" y="265">MCP Apps</text>
+    <text x="528" y="283">ChatGPT Apps SDK</text>
+  </g>
+
+  <!-- 本文位置 -->
+  <path d="M40 332V340H476V332" stroke="#2563eb" stroke-width="1.5" fill="none"/>
+  <text fill="#2563eb" x="258" y="360" font-size="12" text-anchor="middle">本文的方案：业务组件走受控型，组件类型多起来后向声明式靠拢</text>
+</svg>
