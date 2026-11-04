@@ -1,10 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 384" width="760" height="384" role="img" aria-label="协议分层：MCP 连接工具和数据，A2A 连接其他 Agent，AG-UI 连接 Agent 和前端应用，A2UI、Open-JSON-UI、MCP Apps 是在 AG-UI 上传输的 UI 载荷" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Noto Sans CJK TC','Microsoft YaHei',sans-serif" font-size="12.5">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 412" width="760" height="412" role="img" aria-label="协议分层：MCP 连接工具和数据，A2A 连接其他 Agent，AG-UI 连接 Agent 和前端应用，A2UI、Open-JSON-UI、MCP Apps 是在 AG-UI 上传输的 UI 载荷" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Noto Sans CJK TC','Microsoft YaHei',sans-serif" font-size="12.5">
   <defs>
     <marker id="ps-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
       <path fill="#4b5563" d="M0 0L10 5L0 10z"/>
     </marker>
   </defs>
-  <rect width="760" height="384" fill="#fafaf8"/>
+  <rect width="760" height="412" fill="#fafaf8"/>
   <text fill="#111827" x="24" y="32" font-size="15" font-weight="600">几个协议各管一段</text>
 
   <!-- 前端 -->
@@ -25,36 +25,56 @@
     <text fill="#78350f" x="638" y="112" font-size="11">开放式 · MCP Apps</text>
   </g>
 
-  <path d="M380 140V156M380 222V238" stroke="#6b7280" stroke-width="2" fill="none"/>
-
   <!-- AG-UI -->
-  <rect x="24" y="156" width="712" height="66" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
-  <text fill="#1e3a8a" x="40" y="182" font-weight="700" font-size="14">AG-UI</text>
-  <text fill="#1e3a8a" x="40" y="202" font-size="11">Agent ↔ 应用的事件流，常走 SSE</text>
+  <rect x="24" y="168" width="712" height="66" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text fill="#1e3a8a" x="40" y="194" font-weight="700" font-size="14">AG-UI</text>
+  <text fill="#1e3a8a" x="40" y="214" font-size="11">Agent ↔ 应用的事件流，常走 SSE</text>
   <g font-family="'SF Mono','JetBrains Mono',Menlo,Consolas,monospace" font-size="10.5">
-    <rect x="236" y="170" width="132" height="20" rx="10" fill="#ffffff" stroke="#93c5fd"/>
-    <text fill="#1e3a8a" x="302" y="184" text-anchor="middle">TEXT_MESSAGE_*</text>
-    <rect x="376" y="170" width="108" height="20" rx="10" fill="#ffffff" stroke="#93c5fd"/>
-    <text fill="#1e3a8a" x="430" y="184" text-anchor="middle">TOOL_CALL_*</text>
-    <rect x="492" y="170" width="116" height="20" rx="10" fill="#ffffff" stroke="#93c5fd"/>
-    <text fill="#1e3a8a" x="550" y="184" text-anchor="middle">STATE_DELTA</text>
-    <rect x="616" y="170" width="104" height="20" rx="10" fill="#ffffff" stroke="#93c5fd"/>
-    <text fill="#1e3a8a" x="668" y="184" text-anchor="middle">CUSTOM</text>
-    <rect x="236" y="196" width="226" height="20" rx="10" fill="#ffffff" stroke="#c4b5fd"/>
-    <text fill="#4c1d95" x="349" y="210" text-anchor="middle">A2UI / Open-JSON-UI 消息</text>
-    <rect x="470" y="196" width="160" height="20" rx="10" fill="#ffffff" stroke="#fcd34d"/>
-    <text fill="#78350f" x="550" y="210" text-anchor="middle">MCP Apps 资源</text>
+    <rect x="236" y="182" width="132" height="20" rx="10" fill="#ffffff" stroke="#93c5fd"/>
+    <text fill="#1e3a8a" x="302" y="196" text-anchor="middle">TEXT_MESSAGE_*</text>
+    <rect x="376" y="182" width="108" height="20" rx="10" fill="#ffffff" stroke="#93c5fd"/>
+    <text fill="#1e3a8a" x="430" y="196" text-anchor="middle">TOOL_CALL_*</text>
+    <rect x="492" y="182" width="116" height="20" rx="10" fill="#ffffff" stroke="#93c5fd"/>
+    <text fill="#1e3a8a" x="550" y="196" text-anchor="middle">STATE_DELTA</text>
+    <rect x="616" y="182" width="104" height="20" rx="10" fill="#ffffff" stroke="#93c5fd"/>
+    <text fill="#1e3a8a" x="668" y="196" text-anchor="middle">CUSTOM</text>
+    <rect x="236" y="208" width="226" height="20" rx="10" fill="#ffffff" stroke="#c4b5fd"/>
+    <text fill="#4c1d95" x="349" y="222" text-anchor="middle">A2UI / Open-JSON-UI 消息</text>
+    <rect x="470" y="208" width="160" height="20" rx="10" fill="#ffffff" stroke="#fcd34d"/>
+    <text fill="#78350f" x="550" y="222" text-anchor="middle">MCP Apps 资源</text>
   </g>
 
+
   <!-- Agent -->
-  <rect x="232" y="238" width="296" height="48" rx="10" fill="#ffffff" stroke="#111827" stroke-width="1.5"/>
-  <text fill="#111827" x="380" y="267" text-anchor="middle" font-weight="600">Agent / 编排服务</text>
+  <rect x="120" y="274" width="520" height="48" rx="10" fill="#ffffff" stroke="#111827" stroke-width="1.5"/>
+  <text fill="#111827" x="380" y="303" text-anchor="middle" font-weight="600">Agent / 编排服务</text>
 
-  <path d="M300 286V302H189V324" stroke="#4b5563" stroke-width="1.25" fill="none" marker-end="url(#ps-arrow)"/>
-  <path d="M460 286V302H571V324" stroke="#4b5563" stroke-width="1.25" fill="none" marker-end="url(#ps-arrow)"/>
+  <!-- 层间连接（双向） -->
+  <g stroke="#4b5563" stroke-width="1.5" fill="none">
+    <path d="M380 147V161"/>
+    <path d="M380 241V267"/>
+    <path d="M200 329V345"/>
+    <path d="M568 329V345"/>
+  </g>
+  <g fill="#4b5563">
+    <path d="M375 148L380 141L385 148z"/>
+    <path d="M375 160L380 167L385 160z"/>
+    <path d="M375 242L380 235L385 242z"/>
+    <path d="M375 266L380 273L385 266z"/>
+    <path d="M195 330L200 323L205 330z"/>
+    <path d="M195 344L200 351L205 344z"/>
+    <path d="M563 330L568 323L573 330z"/>
+    <path d="M563 344L568 351L573 344z"/>
+  </g>
+  <g fill="#6b7280" font-size="11">
+    <text x="390" y="158">事件 / 动作</text>
+    <text x="390" y="258">AG-UI 事件流</text>
+    <text x="210" y="342">调用工具、读取数据</text>
+    <text x="578" y="342">委托任务</text>
+  </g>
 
-  <rect x="24" y="328" width="330" height="44" rx="10" fill="#ffffff" stroke="#6b7280" stroke-width="1.25"/>
-  <text fill="#111827" x="40" y="355"><tspan font-weight="700">MCP</tspan>：连接工具和数据（业务接口、数据库）</text>
-  <rect x="406" y="328" width="330" height="44" rx="10" fill="#ffffff" stroke="#6b7280" stroke-width="1.25"/>
-  <text fill="#111827" x="422" y="355"><tspan font-weight="700">A2A</tspan>：连接其他 Agent</text>
+  <rect x="24" y="352" width="356" height="44" rx="10" fill="#ffffff" stroke="#6b7280" stroke-width="1.25"/>
+  <text fill="#111827" x="40" y="379"><tspan font-weight="700">MCP</tspan>：连接工具和数据（业务接口、数据库）</text>
+  <rect x="400" y="352" width="336" height="44" rx="10" fill="#ffffff" stroke="#6b7280" stroke-width="1.25"/>
+  <text fill="#111827" x="416" y="379"><tspan font-weight="700">A2A</tspan>：连接其他 Agent</text>
 </svg>
