@@ -5,7 +5,7 @@ tags: [Agent, 前端, Generative UI]
 description: 业务 AI 助手要在回复里渲染图表、日志查询语句、PDF、Excel、卡片和表单。记录一下 SSE 事件协议、后端取数、各类块的 schema 和前端渲染的设计，以及和 AG-UI、A2UI、MCP Apps 这几个标准的对比。
 ---
 
-# Generative UI：在 AI 助手里渲染图表、文件和表单
+# Generative UI：渲染图表、文件和表单
 
 ## 背景
 
