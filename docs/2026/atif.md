@@ -68,9 +68,40 @@ RFC 文档已更新到 v1.8，Harbor 文档中写的当前格式是 v1.7，可�
 - `message`：消息正文。system step 放系统提示，user step 放用户输入，agent step 放模型回复。
 - `reasoning_content`：模型的显式推理过程，只出现在 agent step。
 - `tool_calls`：本步发起的工具调用，一次输出可以包含多个。每个调用有 `tool_call_id`、`function_name`、`arguments`。
-- `observation.results`：工具返回结果，通过 `source_call_id` 和对应的 `tool_call_id` 关联；也可以通过 `subagent_trajectory_ref` 指向一条子 agent 轨迹。
+- `observation`：环境对本步动作的反馈，主要是工具返回结果，下一节细讲。
 - `metrics`：本步的 LLM 指标。
 - `llm_call_count`、`is_copied_context`：分别标记本步包含几次推理、是否是从上一段轨迹复制过来的上下文，下文细讲。
+
+### Observation：环境反馈
+
+`observation` 记录的是**环境对 agent 动作的反馈**，最常见的就是工具的返回结果。它和同一个 step 里的 `tool_calls` 成对出现：`tool_calls` 是模型发出的动作，`observation` 是环境给回的结果。这正好对应强化学习里 action → observation 的循环。
+
+结构上，`observation` 是一个容器，里面的 `results` 数组每一项对应一次工具调用：
+
+```json
+"tool_calls": [
+  { "tool_call_id": "call-1", "function_name": "read_file", "arguments": { "path": "a.ts" } },
+  { "tool_call_id": "call-2", "function_name": "read_file", "arguments": { "path": "b.ts" } }
+],
+"observation": {
+  "results": [
+    { "source_call_id": "call-1", "content": "export const a = 1" },
+    { "source_call_id": "call-2", "content": "export const b = 2" }
+  ]
+}
+```
+
+有几点需要注意：
+
+- **靠 `source_call_id` 对号**：一个 step 里可以并行发起多个工具调用，每条结果通过 `source_call_id` 指回对应的 `tool_call_id`，不依赖数组顺序。校验器也会检查这两者能否对上。
+- **字段是可选的**：纯文本回复、user step 一般没有 observation。v1.2 之后 system step 也可以带 observation，用来记录不是由模型发起、但 agent 能看到的环境信息。
+- **子 agent 也是一种"工具"**：主 agent 把任务派给子 agent 时，对应结果里的 `subagent_trajectory_ref` 指向那条子轨迹（内嵌在 `subagent_trajectories` 里，或者通过 `trajectory_path` 引用外部文件）。从父轨迹看，子 agent 的整段执行就是一次调用的返回。
+
+把 observation 单独拆出来，好处主要在下游：
+
+- **SFT**：observation 不是模型生成的，只作为上下文输入，不参与计算 loss。如果和 agent 消息混在一起，就没法准确做 loss mask。
+- **RL**：observation 就是状态转移后环境给出的信息，奖励和优势计算都要以它为分界。
+- **调试与回放**：查看器可以把"agent 做了什么"和"环境回了什么"分开展示，排查时容易看出是模型决策有问题，还是工具返回出了问题。
 
 ### Metrics：token 与成本
 
